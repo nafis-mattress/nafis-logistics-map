@@ -9,132 +9,304 @@
 
 <style>
 *{box-sizing:border-box}
-html,body{height:100%;margin:0;font-family:Tahoma,Arial,sans-serif;background:#eef3f3}
+html,body{
+  height:100%;margin:0;
+  font-family:Tahoma,Arial,sans-serif;
+  background:#eef3f3
+}
 #map{position:absolute;inset:0}
 
 .panel{
-  position:absolute;z-index:10;top:14px;right:14px;width:355px;
-  max-height:calc(100vh - 28px);overflow:auto;
-  background:#fff;border-radius:18px;padding:14px 16px;
+  position:absolute;z-index:10;
+  top:14px;right:14px;
+  width:365px;
+  max-height:calc(100vh - 28px);
+  overflow:auto;
+  background:#fff;
+  border-radius:18px;
+  padding:14px 16px;
   box-shadow:0 8px 30px #0002
 }
 
-.title{font-weight:700;color:#00656D;font-size:18px;margin-bottom:4px}
-.subtitle{font-size:11px;color:#777;margin-bottom:10px}
-
-.row{display:flex;gap:7px;margin-top:8px}
-
-select,input,button{
-  font-family:inherit;border:1px solid #d7dddd;border-radius:10px;
-  padding:9px;font-size:12px
+.title{
+  font-weight:700;
+  color:#00656D;
+  font-size:18px;
+  margin-bottom:3px
+}
+.subtitle{
+  font-size:11px;
+  color:#777;
+  margin-bottom:10px
 }
 
-select,input{flex:1;min-width:0;background:white}
+.row{
+  display:flex;
+  gap:7px;
+  margin-top:8px
+}
+
+select,input,button{
+  font-family:inherit;
+  border:1px solid #d7dddd;
+  border-radius:10px;
+  padding:9px;
+  font-size:12px
+}
+
+select,input{
+  flex:1;
+  min-width:0;
+  background:#fff
+}
 
 button{
-  background:#00656D;color:white;border:none;cursor:pointer;
+  background:#00656D;
+  color:#fff;
+  border:none;
+  cursor:pointer;
   transition:.15s
 }
 button:hover{opacity:.9}
-button.secondary{background:#eef5f5;color:#00656D}
-button.danger{background:#B74E3D}
-button.gold{background:#D09039}
 button:disabled{opacity:.45;cursor:not-allowed}
 
+.secondary{
+  background:#eef5f5;
+  color:#00656D
+}
+
+.danger{
+  background:#B74E3D
+}
+
+.gold{
+  background:#D09039
+}
+
+.selectMode{
+  width:100%;
+  margin-top:10px;
+  background:#eef5f5;
+  color:#00656D;
+  border:1px solid #cfe2e2;
+  font-weight:bold
+}
+
+.selectMode.active{
+  background:#00656D;
+  color:#fff;
+  border-color:#00656D
+}
+
 .status{
-  margin-top:8px;font-size:12px;padding:8px 10px;border-radius:10px;
-  background:#eef7f7;color:#00656D;line-height:1.8
+  margin-top:8px;
+  font-size:11px;
+  padding:8px 10px;
+  border-radius:10px;
+  background:#eef7f7;
+  color:#00656D;
+  line-height:1.8
 }
 
 .section{
-  margin-top:14px;padding-top:12px;border-top:1px solid #eee
+  margin-top:14px;
+  padding-top:12px;
+  border-top:1px solid #eee
 }
 
-.section-title{
-  font-size:13px;font-weight:bold;color:#171C1F;margin-bottom:7px
+.sectionTitle{
+  font-size:13px;
+  font-weight:bold;
+  color:#171C1F;
+  margin-bottom:7px
 }
 
 .planBox{
-  background:#f7f9f9;border:1px solid #e4eaea;
-  border-radius:13px;padding:10px;margin-top:8px
+  background:#f7f9f9;
+  border:1px solid #e4eaea;
+  border-radius:13px;
+  padding:10px;
+  margin-top:8px
 }
 
 .stop{
-  display:flex;align-items:center;gap:8px;
-  border-bottom:1px solid #e8eded;padding:8px 0;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  border-bottom:1px solid #e8eded;
+  padding:8px 0;
   font-size:11px
 }
 .stop:last-child{border-bottom:0}
 
 .stopNumber{
-  width:25px;height:25px;min-width:25px;border-radius:50%;
-  background:#00656D;color:white;display:flex;
-  align-items:center;justify-content:center;font-weight:bold
+  width:27px;
+  height:27px;
+  min-width:27px;
+  border-radius:50%;
+  background:#00656D;
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:bold
 }
 
-.stopInfo{flex:1;line-height:1.7}
+.stopInfo{
+  flex:1;
+  line-height:1.7
+}
+
 .stopRemove{
-  width:26px;height:26px;padding:0;border-radius:7px;
-  background:#fff;color:#B74E3D;border:1px solid #eed7d3
+  width:27px;
+  height:27px;
+  padding:0;
+  border-radius:7px;
+  background:#fff;
+  color:#B74E3D;
+  border:1px solid #eed7d3
 }
 
 .routeInfo{
-  margin-top:8px;background:#fff8ec;border:1px solid #f0dfbd;
-  border-radius:10px;padding:8px;font-size:11px;line-height:1.8
+  margin-top:8px;
+  background:#fff8ec;
+  border:1px solid #f0dfbd;
+  border-radius:10px;
+  padding:9px;
+  font-size:11px;
+  line-height:1.9
 }
 
 .pin{
-  width:22px;height:22px;border-radius:50% 50% 50% 0;
-  border:3px solid white;box-shadow:0 2px 8px #0004;
-  transform:rotate(-45deg)
+  width:23px;
+  height:23px;
+  border-radius:50% 50% 50% 0;
+  border:3px solid #fff;
+  box-shadow:0 2px 8px #0004;
+  transform:rotate(-45deg);
+  cursor:pointer
 }
+
 .pin.ready{background:#00656D}
 .pin.wait{background:#D09039}
 .pin.planned{background:#3d6fb6}
 .pin.delivered{background:#8b8b8b}
 
-.routePin{
-  width:30px;height:30px;border-radius:50%;
-  background:#171C1F;color:white;border:3px solid white;
-  box-shadow:0 2px 10px #0005;
-  display:flex;align-items:center;justify-content:center;
-  font-size:12px;font-weight:bold
+.pin.selected{
+  width:31px;
+  height:31px;
+  border-radius:50%;
+  transform:none;
+  background:#171C1F;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#fff;
+  font-weight:bold;
+  font-size:12px;
+  border:3px solid #fff
 }
 
 .popup{
-  direction:rtl;min-width:230px;font-family:Tahoma,Arial;
+  direction:rtl;
+  min-width:230px;
+  font-family:Tahoma,Arial
 }
-.popupName{font-size:14px;font-weight:bold;color:#00656D;margin-bottom:6px}
-.popupLine{font-size:11px;line-height:1.9;color:#444}
-.popupActions{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:8px}
-.popupActions a,.popupActions button{
-  text-align:center;text-decoration:none;padding:7px 5px;
-  border-radius:8px;font-size:10px;border:0
+
+.popupName{
+  font-size:14px;
+  font-weight:bold;
+  color:#00656D;
+  margin-bottom:6px
 }
-.popupActions a{background:#eef5f5;color:#00656D}
-.popupActions button{background:#00656D;color:white}
+
+.popupLine{
+  font-size:11px;
+  line-height:1.9;
+  color:#444
+}
+
+.popupActions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:5px;
+  margin-top:8px
+}
+
+.popupActions a,
+.popupActions button{
+  text-align:center;
+  text-decoration:none;
+  padding:7px 5px;
+  border-radius:8px;
+  font-size:10px;
+  border:0
+}
+
+.popupActions a{
+  background:#eef5f5;
+  color:#00656D
+}
+
+.popupActions button{
+  background:#00656D;
+  color:#fff
+}
 
 .legend{
-  display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;
-  font-size:10px;color:#555
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-top:10px;
+  font-size:10px;
+  color:#555
 }
+
 .legend span:before{
-  content:"";display:inline-block;width:9px;height:9px;
-  border-radius:50%;margin-left:4px;vertical-align:middle
+  content:"";
+  display:inline-block;
+  width:9px;
+  height:9px;
+  border-radius:50%;
+  margin-left:4px;
+  vertical-align:middle
 }
+
 .legend .a:before{background:#00656D}
 .legend .b:before{background:#D09039}
 .legend .c:before{background:#3d6fb6}
 
-.small{font-size:10px;color:#777;line-height:1.7}
-.loading{color:#D09039}
+.small{
+  font-size:10px;
+  color:#777;
+  line-height:1.8
+}
+
 .success{color:#00656D}
 .error{color:#B74E3D}
+.loading{color:#D09039}
+
+.counter{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:25px;
+  height:25px;
+  border-radius:50%;
+  background:#00656D;
+  color:#fff;
+  font-size:11px;
+  font-weight:bold
+}
 
 @media(max-width:650px){
   .panel{
-    top:auto;bottom:8px;right:8px;left:8px;width:auto;
-    max-height:48vh;border-radius:16px
+    top:auto;
+    bottom:8px;
+    right:8px;
+    left:8px;
+    width:auto;
+    max-height:52vh
   }
 }
 </style>
@@ -147,7 +319,9 @@ button:disabled{opacity:.45;cursor:not-allowed}
 <div class="panel">
 
   <div class="title">نقشه لجستیک نفیس</div>
-  <div class="subtitle">مدیریت سفارش‌ها و برنامه‌ریزی مسیر رانندگان</div>
+  <div class="subtitle">
+    مدیریت سفارش‌ها و برنامه‌ریزی مسیر رانندگان
+  </div>
 
   <div class="row">
     <select id="cityFilter">
@@ -163,11 +337,22 @@ button:disabled{opacity:.45;cursor:not-allowed}
   </div>
 
   <div class="row">
-    <input id="searchInput" placeholder="نام، موبایل، سفارش، آدرس...">
+    <input id="searchInput"
+      placeholder="نام، موبایل، سفارش، آدرس...">
     <button id="refreshBtn">بروزرسانی</button>
   </div>
 
-  <div id="dataStatus" class="status">در حال دریافت اطلاعات...</div>
+  <div id="dataStatus" class="status">
+    در حال دریافت اطلاعات...
+  </div>
+
+  <button id="selectModeBtn" class="selectMode">
+    ☑️ فعال کردن انتخاب مسیر
+  </button>
+
+  <div id="selectionHelp" class="status">
+    برای برنامه‌ریزی چند سفارش، ابتدا «انتخاب مسیر» را فعال کنید.
+  </div>
 
   <div class="legend">
     <span class="a">آماده برنامه‌ریزی</span>
@@ -175,44 +360,55 @@ button:disabled{opacity:.45;cursor:not-allowed}
     <span class="c">برنامه‌ریزی شده</span>
   </div>
 
+
   <div class="section">
 
-    <div class="section-title">🚚 برنامه ارسال</div>
-
-    <div class="row">
-      <select id="driverSelect">
-        <option value="">انتخاب راننده...</option>
-      </select>
+    <div class="sectionTitle">
+      🚚 برنامه ارسال
+      &nbsp;
+      <span id="selectedCount" class="counter">0</span>
     </div>
+
+    <select id="driverSelect">
+      <option value="">انتخاب راننده...</option>
+    </select>
 
     <div id="driverInfo" class="small"></div>
 
     <div class="row">
-      <button id="optimizeBtn">بهینه‌سازی مسیر</button>
-      <button id="clearPlanBtn" class="secondary">پاک کردن</button>
+      <button id="optimizeBtn">
+        🧠 بهینه‌سازی مسیر
+      </button>
+
+      <button id="clearPlanBtn" class="secondary">
+        پاک کردن
+      </button>
     </div>
 
     <div id="routeStatus" class="status">
-      برای شروع، روی یکی از سفارش‌ها بزنید و «افزودن به مسیر» را انتخاب کنید.
+      هنوز سفارشی انتخاب نشده است.
     </div>
 
     <div id="routeInfo"></div>
 
     <div id="stopsList" class="planBox">
-      <div class="small">هنوز سفارشی به برنامه اضافه نشده است.</div>
+      <div class="small">
+        هنوز سفارشی به برنامه اضافه نشده است.
+      </div>
     </div>
 
   </div>
 
 </div>
 
+
 <script src="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
 
 <script>
 
-/* =====================================================
+/* ===============================
    تنظیمات
-===================================================== */
+================================ */
 
 const ORDERS_CSV =
 "https://docs.google.com/spreadsheets/d/e/2PACX-1vTZn_pFhDgKsUuFJ6Rj4RKzJcRTH64KoTM9rTE0N43RqmUCj7E-UnoYxRMlBhsicUytqxWpYKzQkUa7/pub?gid=0&single=true&output=csv";
@@ -221,16 +417,15 @@ const DRIVERS_CSV =
 "https://docs.google.com/spreadsheets/d/e/2PACX-1vTZn_pFhDgKsUuFJ6Rj4RKzJcRTH64KoTM9rTE0N43RqmUCj7E-UnoYxRMlBhsicUytqxWpYKzQkUa7/pub?gid=1633494032&single=true&output=csv";
 
 /*
-  کلید فعلی Map.ir خودت را بین کوتیشن قرار بده.
-  مثال:
-  const MAPIR_KEY = "xxxxxxxx";
+  همان کلید تست Map.ir که فرستادی را
+  بین کوتیشن زیر Paste کن.
 */
-const MAPIR_KEY = "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6ImUzM2Y0N2UyMDkxYTI2NzA0NjQzYjc5OTU2ZjQ1MDBlMTc3NzA2YmI2NzBhODM5NjFmMjdiODA0YzZmMmFlYTRmNGZjODM4ZDQwZmZjYzhkIn0.eyJhdWQiOiI0NDAyOCIsImp0aSI6ImUzM2Y0N2UyMDkxYTI2NzA0NjQzYjc5OTU2ZjQ1MDBlMTc3NzA2YmI2NzBhODM5NjFmMjdiODA0YzZmMmFlYTRmNGZjODM4ZDQwZmZjYzhkIiwiaWF0IjoxNzg5NDcxMDE1LCJuYmYiOjE3ODk0NzEwMTUsImV4cCI6MTc5MjE1MzAxNSwic3ViIjoiIiwic2NvcGVzIjpbImJhc2ljIl19.iFEs3zfgdbVXTenqn73XcGuy5PZ7hsBnpyHES8_hZb0oiEfVlmaaswiKwrQOyg0ty7rxpNGoJ8ifrC8yy7-k4YMdxXHgrthNson3d7fLO9TeogDtQ2W2lCBjr_MBAMFdLeJUIkw4x6up0TSPEC9jXWsm0FXKm-ATn2E-JNnXwSr5LhbFAJW2wktb1yXt8Mke3PLoF2Q3dtNIVHs3ZxACQMtvQ9Ufp--jlxDc3eydcQQCelFWHbtbeyhRvi08C6TKn711a5Z3mzUGKVNqusBBN-f5FdKwADi6kC8AECyTYSPx1wNfWa3ezaDMMyTHts-vHJIg8ipwjMCmP7WafvkHEA";
+const MAPIR_KEY = "کلید تست را اینجا Paste کن";
 
 
-/* =====================================================
+/* ===============================
    RTL
-===================================================== */
+================================ */
 
 try{
   const rtlStatus=maplibregl.getRTLTextPluginStatus();
@@ -245,14 +440,14 @@ try{
       false
     );
   }
-}catch(e){
-  console.warn("RTL plugin:",e);
+}catch(error){
+  console.warn("RTL:",error);
 }
 
 
-/* =====================================================
-   نقشه
-===================================================== */
+/* ===============================
+   MAP
+================================ */
 
 const map=new maplibregl.Map({
   container:"map",
@@ -266,14 +461,14 @@ const map=new maplibregl.Map({
   transformRequest:(url)=>{
     if(url.includes("map.ir")){
       return{
-        url:url,
+        url,
         headers:{
           "x-api-key":MAPIR_KEY
         }
       };
     }
 
-    return{url:url};
+    return{url};
   }
 });
 
@@ -283,22 +478,22 @@ map.addControl(
 );
 
 
-/* =====================================================
-   متغیرها
-===================================================== */
+/* ===============================
+   DATA
+================================ */
 
 let orders=[];
 let drivers=[];
-
-let orderMarkers=[];
-let routeMarkers=[];
+let markers=[];
 
 let selectedOrders=[];
 
+let selectionMode=false;
 
-/* =====================================================
-   ابزارها
-===================================================== */
+
+/* ===============================
+   HELPERS
+================================ */
 
 function esc(s){
   return String(s??"").replace(
@@ -312,15 +507,6 @@ function esc(s){
   );
 }
 
-function phoneLink(s){
-  let p=String(s||"").replace(/[^\d+]/g,"");
-
-  if(p.length===10 && p.startsWith("9")){
-    p="0"+p;
-  }
-
-  return p;
-}
 
 function parseCSV(text){
 
@@ -381,7 +567,8 @@ function csvToObjects(text){
 
   if(!data.length)return[];
 
-  const headers=data[0].map(x=>x.trim());
+  const headers=
+    data[0].map(x=>x.trim());
 
   return data.slice(1).map(row=>{
 
@@ -396,44 +583,8 @@ function csvToObjects(text){
 }
 
 
-function statusClass(s){
-
-  if(s==="آماده برنامه‌ریزی")return"ready";
-  if(s==="در انتظار تولید")return"wait";
-  if(s==="ارسال برنامه‌ریزی شده")return"planned";
-
-  return"delivered";
-}
-
-
-function getLat(r){
-  return parseFloat(
-    String(r["عرض جغرافیایی"]||"")
-    .replace(",",".")
-  );
-}
-
-function getLng(r){
-  return parseFloat(
-    String(r["طول جغرافیایی"]||"")
-    .replace(",",".")
-  );
-}
-
-function validCoords(r){
-
-  const lat=getLat(r);
-  const lng=getLng(r);
-
-  return(
-    Number.isFinite(lat) &&
-    Number.isFinite(lng)
-  );
-}
-
-
 function orderCode(r){
-  return(
+  return String(
     r["کد سفارش"] ||
     r["شماره سفارش"] ||
     ""
@@ -441,21 +592,90 @@ function orderCode(r){
 }
 
 
-/* =====================================================
-   دریافت اطلاعات
-===================================================== */
+function getLat(r){
+  return parseFloat(
+    String(
+      r["عرض جغرافیایی"]||""
+    ).replace(",",".")
+  );
+}
+
+
+function getLng(r){
+  return parseFloat(
+    String(
+      r["طول جغرافیایی"]||""
+    ).replace(",",".")
+  );
+}
+
+
+function validCoords(r){
+
+  return(
+    Number.isFinite(getLat(r)) &&
+    Number.isFinite(getLng(r))
+  );
+}
+
+
+function phoneLink(s){
+
+  let p=
+    String(s||"")
+    .replace(/[^\d+]/g,"");
+
+  if(
+    p.length===10 &&
+    p.startsWith("9")
+  ){
+    p="0"+p;
+  }
+
+  return p;
+}
+
+
+function statusClass(s){
+
+  if(s==="آماده برنامه‌ریزی")
+    return"ready";
+
+  if(s==="در انتظار تولید")
+    return"wait";
+
+  if(s==="ارسال برنامه‌ریزی شده")
+    return"planned";
+
+  return"delivered";
+}
+
+
+function selectedIndex(r){
+
+  return selectedOrders.findIndex(
+    x=>orderCode(x)===orderCode(r)
+  );
+}
+
+
+/* ===============================
+   LOAD DATA
+================================ */
 
 async function loadData(){
 
-  const status=document.getElementById("dataStatus");
+  const status=
+    document.getElementById("dataStatus");
 
-  status.innerHTML="در حال دریافت سفارش‌ها و رانندگان...";
+  status.textContent=
+    "در حال دریافت سفارش‌ها و رانندگان...";
 
   try{
 
     const stamp=Date.now();
 
-    const [ordersRes,driversRes]=await Promise.all([
+    const [oRes,dRes]=await Promise.all([
 
       fetch(
         ORDERS_CSV+"&_="+stamp,
@@ -469,63 +689,66 @@ async function loadData(){
 
     ]);
 
-    if(!ordersRes.ok)
-      throw new Error("خطا در دریافت سفارش‌ها");
+    if(!oRes.ok)
+      throw new Error("دریافت سفارش‌ها ناموفق بود.");
 
-    if(!driversRes.ok)
-      throw new Error("خطا در دریافت رانندگان");
+    if(!dRes.ok)
+      throw new Error("دریافت رانندگان ناموفق بود.");
 
 
     orders=csvToObjects(
-      await ordersRes.text()
+      await oRes.text()
     );
 
     drivers=csvToObjects(
-      await driversRes.text()
+      await dRes.text()
     );
 
 
     populateCities();
     populateDrivers();
-
     renderOrders();
 
 
-    const openCount=orders.filter(
-      r=>(r["وضعیت ارسال"]||"").trim()!=="تحویل شده"
-    ).length;
+    const openCount=
+      orders.filter(
+        r=>
+        (r["وضعیت ارسال"]||"").trim()
+        !=="تحویل شده"
+      ).length;
 
 
     status.innerHTML=
-      `سفارش‌های باز: <b>${openCount}</b>
-       از ${orders.length}
+      `سفارش باز: <b>${openCount}</b>
        &nbsp; | &nbsp;
-       رانندگان: <b>${drivers.length}</b>`;
+       راننده: <b>${drivers.length}</b>`;
 
-  }catch(err){
+  }catch(error){
 
-    console.error(err);
+    console.error(error);
 
     status.innerHTML=
       `<span class="error">
-       خطا در دریافت اطلاعات: ${esc(err.message)}
-       </span>`;
+      ${esc(error.message)}
+      </span>`;
   }
 }
 
 
-/* =====================================================
-   شهرها
-===================================================== */
+/* ===============================
+   FILTERS
+================================ */
 
 function populateCities(){
 
-  const select=document.getElementById("cityFilter");
+  const select=
+    document.getElementById("cityFilter");
 
-  const current=select.value;
+  const old=select.value;
 
   select.innerHTML=
     '<option value="">همه شهرها</option>';
+
 
   const cities=[
     ...new Set(
@@ -534,6 +757,7 @@ function populateCities(){
       .filter(Boolean)
     )
   ].sort();
+
 
   cities.forEach(city=>{
 
@@ -545,24 +769,23 @@ function populateCities(){
     select.appendChild(op);
   });
 
-  select.value=current;
+  select.value=old;
 }
 
 
-/* =====================================================
-   رانندگان
-===================================================== */
-
 function populateDrivers(){
 
-  const select=document.getElementById("driverSelect");
+  const select=
+    document.getElementById("driverSelect");
 
   select.innerHTML=
     '<option value="">انتخاب راننده...</option>';
 
 
   drivers
-  .filter(d=>(d["وضعیت"]||"").trim()==="فعال")
+  .filter(
+    d=>(d["وضعیت"]||"").trim()==="فعال"
+  )
   .forEach(d=>{
 
     const op=document.createElement("option");
@@ -577,10 +800,16 @@ function populateDrivers(){
 }
 
 
-function selectedDriver(){
+/* ===============================
+   DRIVER
+================================ */
+
+function getDriver(){
 
   const id=
-    document.getElementById("driverSelect").value;
+    document.getElementById(
+      "driverSelect"
+    ).value;
 
   return drivers.find(
     d=>d["کد راننده"]===id
@@ -590,99 +819,192 @@ function selectedDriver(){
 
 function showDriverInfo(){
 
-  const d=selectedDriver();
+  const d=getDriver();
 
   const box=
-    document.getElementById("driverInfo");
+    document.getElementById(
+      "driverInfo"
+    );
 
   if(!d){
-
     box.innerHTML="";
     return;
   }
 
   box.innerHTML=
-    `🚚 ${esc(d["نوع خودرو"]||"-")}
-     &nbsp; | &nbsp;
-     ظرفیت: ${esc(d["ظرفیت سفارش"]||"-")}
-     سفارش
-     <br>
-     📍 ${esc(d["محدوده فعالیت"]||"-")}
-     &nbsp; | &nbsp;
-     📞 ${esc(phoneLink(d["موبایل"]))}`;
+    `
+    🚚 ${esc(d["نوع خودرو"]||"-")}
+    &nbsp; | &nbsp;
+    ظرفیت:
+    <b>${esc(d["ظرفیت سفارش"]||"-")}</b>
+    سفارش
+
+    <br>
+
+    📍 ${esc(d["محدوده فعالیت"]||"-")}
+
+    &nbsp; | &nbsp;
+
+    📞 ${esc(phoneLink(d["موبایل"]))}
+    `;
 }
 
 
-/* =====================================================
-   نمایش سفارش‌ها
-===================================================== */
+/* ===============================
+   SELECTION MODE
+================================ */
 
-function clearOrderMarkers(){
+function toggleSelectionMode(){
 
-  orderMarkers.forEach(m=>m.remove());
+  selectionMode=!selectionMode;
 
-  orderMarkers=[];
+  const btn=
+    document.getElementById(
+      "selectModeBtn"
+    );
+
+  const help=
+    document.getElementById(
+      "selectionHelp"
+    );
+
+
+  if(selectionMode){
+
+    btn.classList.add("active");
+
+    btn.textContent=
+      "✅ انتخاب مسیر فعال است";
+
+    help.innerHTML=
+      `روی پین مشتری‌ها کلیک کنید.
+       هر کلیک یک سفارش را انتخاب می‌کند.
+       برای حذف، دوباره روی همان پین بزنید.`;
+
+  }else{
+
+    btn.classList.remove("active");
+
+    btn.textContent=
+      "☑️ فعال کردن انتخاب مسیر";
+
+    help.innerHTML=
+      `حالت انتخاب خاموش است.
+       کلیک روی پین، اطلاعات مشتری را نمایش می‌دهد.`;
+  }
+}
+
+
+/* ===============================
+   MAP ORDERS
+================================ */
+
+function clearMarkers(){
+
+  markers.forEach(m=>m.remove());
+
+  markers=[];
 }
 
 
 function renderOrders(){
 
-  clearOrderMarkers();
+  clearMarkers();
 
   const city=
-    document.getElementById("cityFilter").value;
+    document.getElementById(
+      "cityFilter"
+    ).value;
 
   const st=
-    document.getElementById("statusFilter").value;
+    document.getElementById(
+      "statusFilter"
+    ).value;
 
   const term=
-    document.getElementById("searchInput")
-    .value.trim().toLowerCase();
+    document.getElementById(
+      "searchInput"
+    ).value
+    .trim()
+    .toLowerCase();
 
 
-  const filtered=orders.filter(r=>{
+  const filtered=
+    orders.filter(r=>{
 
-    if(
-      (r["وضعیت ارسال"]||"").trim()==="تحویل شده"
-    )return false;
-
-    if(city && r["شهر"]!==city)
-      return false;
-
-    if(st && r["وضعیت ارسال"]!==st)
-      return false;
-
-    if(term){
-
-      const hay=[
-        r["کد سفارش"],
-        r["شماره سفارش"],
-        r["نام مشتری"],
-        r["موبایل مشتری"],
-        r["شهر"],
-        r["آدرس"]
-      ]
-      .join(" ")
-      .toLowerCase();
-
-      if(!hay.includes(term))
+      if(
+        (r["وضعیت ارسال"]||"").trim()
+        ==="تحویل شده"
+      ){
         return false;
-    }
+      }
 
-    return validCoords(r);
-  });
+      if(
+        city &&
+        r["شهر"]!==city
+      ){
+        return false;
+      }
+
+      if(
+        st &&
+        r["وضعیت ارسال"]!==st
+      ){
+        return false;
+      }
+
+      if(term){
+
+        const hay=[
+          orderCode(r),
+          r["نام مشتری"],
+          r["موبایل مشتری"],
+          r["شهر"],
+          r["آدرس"],
+          r["اقلام سفارش"]
+        ]
+        .join(" ")
+        .toLowerCase();
+
+        if(!hay.includes(term))
+          return false;
+      }
+
+      return validCoords(r);
+    });
 
 
   filtered.forEach(r=>{
 
-    const el=document.createElement("div");
+    const el=
+      document.createElement("div");
 
-    el.className=
-      "pin "+statusClass(r["وضعیت ارسال"]);
+    const index=
+      selectedIndex(r);
+
+
+    if(index>=0){
+
+      el.className=
+        "pin selected";
+
+      el.textContent=
+        String(index+1);
+
+    }else{
+
+      el.className=
+        "pin "+
+        statusClass(
+          r["وضعیت ارسال"]
+        );
+    }
 
 
     const marker=
-      new maplibregl.Marker({element:el})
+      new maplibregl.Marker({
+        element:el
+      })
       .setLngLat([
         getLng(r),
         getLat(r)
@@ -690,96 +1012,163 @@ function renderOrders(){
       .addTo(map);
 
 
-    el.addEventListener("click",()=>{
+    el.addEventListener(
+      "click",
+      event=>{
 
-      showOrderPopup(r,marker);
-    });
+        event.stopPropagation();
+
+        if(selectionMode){
+
+          toggleOrder(r);
+
+        }else{
+
+          showPopup(r,marker);
+        }
+      }
+    );
 
 
-    orderMarkers.push(marker);
+    markers.push(marker);
   });
 
 
-  document.getElementById("dataStatus").innerHTML=
-    `نمایش <b>${filtered.length}</b> سفارش روی نقشه`;
+  document.getElementById(
+    "dataStatus"
+  ).innerHTML=
+    `نمایش <b>${filtered.length}</b>
+     سفارش روی نقشه
+     &nbsp; | &nbsp;
+     انتخاب‌شده:
+     <b>${selectedOrders.length}</b>`;
 }
 
 
-/* =====================================================
-   Popup
-===================================================== */
+/* ===============================
+   TOGGLE ORDER
+================================ */
 
-function showOrderPopup(r,marker){
+function toggleOrder(r){
+
+  const index=
+    selectedIndex(r);
+
+  if(index>=0){
+
+    selectedOrders.splice(index,1);
+
+    setRouteStatus(
+      `${r["نام مشتری"]||"سفارش"} از برنامه حذف شد.`
+    );
+
+  }else{
+
+    selectedOrders.push(r);
+
+    setRouteStatus(
+      `${r["نام مشتری"]||"سفارش"} به برنامه اضافه شد.`,
+      "success"
+    );
+  }
+
+
+  clearRoute();
+
+  renderStops();
+  renderOrders();
+}
+
+
+/* ===============================
+   POPUP
+================================ */
+
+function showPopup(r,marker){
 
   const lat=getLat(r);
   const lng=getLng(r);
 
-  const phone=phoneLink(
-    r["موبایل مشتری"]
-  );
+  const phone=
+    phoneLink(
+      r["موبایل مشتری"]
+    );
 
   const google=
     `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
 
 
+  const isSelected=
+    selectedIndex(r)>=0;
+
+
   const html=`
-  <div class="popup">
+    <div class="popup">
 
-    <div class="popupName">
-      ${esc(r["نام مشتری"]||"مشتری")}
+      <div class="popupName">
+        ${esc(r["نام مشتری"]||"مشتری")}
+      </div>
+
+      <div class="popupLine">
+        سفارش:
+        <b>${esc(orderCode(r))}</b>
+      </div>
+
+      <div class="popupLine">
+        📞 ${esc(phone)}
+      </div>
+
+      <div class="popupLine">
+        📍 ${esc(r["شهر"]||"")}
+        ${r["آدرس"] ?
+          " - "+esc(r["آدرس"])
+          :""
+        }
+      </div>
+
+      <div class="popupLine">
+        🛏 ${esc(r["اقلام سفارش"]||"-")}
+      </div>
+
+      <div class="popupLine">
+        وضعیت:
+        <b>
+          ${esc(r["وضعیت ارسال"]||"-")}
+        </b>
+      </div>
+
+      <div class="popupActions">
+
+        <a href="tel:${phone}">
+          📞 تماس
+        </a>
+
+        <a
+          href="${google}"
+          target="_blank"
+          rel="noopener"
+        >
+          🧭 مسیریاب
+        </a>
+
+        <button
+          onclick="toggleOrderByCode('${esc(orderCode(r))}')"
+        >
+          ${isSelected ?
+            "➖ حذف از مسیر":
+            "➕ افزودن به مسیر"
+          }
+        </button>
+
+        <button
+          onclick="focusOrder('${esc(orderCode(r))}')"
+        >
+          📍 نمایش
+        </button>
+
+      </div>
+
     </div>
-
-    <div class="popupLine">
-      سفارش: <b>${esc(orderCode(r))}</b>
-    </div>
-
-    <div class="popupLine">
-      📞 ${esc(phone)}
-    </div>
-
-    <div class="popupLine">
-      📍 ${esc(r["شهر"]||"")}
-      ${r["آدرس"] ? " - "+esc(r["آدرس"]) : ""}
-    </div>
-
-    <div class="popupLine">
-      🛏 ${esc(r["اقلام سفارش"]||"-")}
-    </div>
-
-    <div class="popupLine">
-      وضعیت:
-      <b>${esc(r["وضعیت ارسال"]||"-")}</b>
-    </div>
-
-    <div class="popupActions">
-
-      <a href="tel:${phone}">
-        📞 تماس
-      </a>
-
-      <a
-        href="${google}"
-        target="_blank"
-        rel="noopener"
-      >
-        🧭 مسیریاب
-      </a>
-
-      <button
-        onclick="addOrderByCode('${esc(orderCode(r))}')"
-      >
-        ➕ افزودن به مسیر
-      </button>
-
-      <button
-        onclick="focusOrder('${esc(orderCode(r))}')"
-      >
-        📍 نمایش
-      </button>
-
-    </div>
-
-  </div>
   `;
 
 
@@ -790,85 +1179,77 @@ function showOrderPopup(r,marker){
     }).setHTML(html)
   );
 
+
   marker.togglePopup();
 }
 
 
-window.focusOrder=function(code){
+window.toggleOrderByCode=
+function(code){
 
-  const r=orders.find(
-    x=>String(orderCode(x))===String(code)
-  );
+  const r=
+    orders.find(
+      x=>orderCode(x)===String(code)
+    );
 
-  if(!r || !validCoords(r))return;
+  if(!r)return;
+
+  toggleOrder(r);
+};
+
+
+window.focusOrder=
+function(code){
+
+  const r=
+    orders.find(
+      x=>orderCode(x)===String(code)
+    );
+
+  if(!r || !validCoords(r))
+    return;
 
   map.flyTo({
-    center:[getLng(r),getLat(r)],
+    center:[
+      getLng(r),
+      getLat(r)
+    ],
     zoom:15
   });
 };
 
 
-/* =====================================================
-   اضافه کردن سفارش به مسیر
-===================================================== */
-
-window.addOrderByCode=function(code){
-
-  const r=orders.find(
-    x=>String(orderCode(x))===String(code)
-  );
-
-  if(!r)return;
-
-  if(
-    selectedOrders.some(
-      x=>String(orderCode(x))===String(code)
-    )
-  ){
-
-    setRouteStatus(
-      "این سفارش قبلاً به برنامه مسیر اضافه شده است.",
-      "error"
-    );
-
-    return;
-  }
-
-
-  selectedOrders.push(r);
-
-  renderStops();
-
-  setRouteStatus(
-    `${r["نام مشتری"]||"سفارش"} به برنامه مسیر اضافه شد.`,
-    "success"
-  );
-};
-
-
-/* =====================================================
-   لیست توقف‌ها
-===================================================== */
+/* ===============================
+   STOPS LIST
+================================ */
 
 function renderStops(){
 
   const box=
-    document.getElementById("stopsList");
+    document.getElementById(
+      "stopsList"
+    );
+
+  document.getElementById(
+    "selectedCount"
+  ).textContent=
+    selectedOrders.length;
+
 
   if(!selectedOrders.length){
 
     box.innerHTML=
-      '<div class="small">هنوز سفارشی به برنامه اضافه نشده است.</div>';
-
-    clearRouteMarkers();
+      `<div class="small">
+       هنوز سفارشی به برنامه اضافه نشده است.
+       </div>`;
 
     return;
   }
 
 
   box.innerHTML=
-    selectedOrders.map((r,i)=>`
+    selectedOrders
+    .map((r,i)=>`
 
       <div class="stop">
 
@@ -885,7 +1266,7 @@ function renderStops(){
           <br>
 
           ${esc(r["شهر"]||"")}
-          -
+          &nbsp; | &nbsp;
           ${esc(orderCode(r))}
 
         </div>
@@ -899,77 +1280,116 @@ function renderStops(){
 
       </div>
 
-    `).join("");
-
-
-  drawRouteStopMarkers();
+    `)
+    .join("");
 }
 
 
-window.removeStop=function(index){
+window.removeStop=
+function(index){
 
-  selectedOrders.splice(index,1);
+  const removed=
+    selectedOrders[index];
+
+  selectedOrders.splice(
+    index,
+    1
+  );
 
   clearRoute();
 
   renderStops();
+  renderOrders();
 
-  setRouteStatus(
-    "سفارش از برنامه مسیر حذف شد."
-  );
+  if(removed){
+
+    setRouteStatus(
+      `${removed["نام مشتری"]||"سفارش"} از برنامه حذف شد.`
+    );
+  }
 };
 
 
-/* =====================================================
-   مارکر شماره توقف‌ها
-===================================================== */
+/* ===============================
+   ROUTE STATUS
+================================ */
 
-function clearRouteMarkers(){
+function setRouteStatus(
+  text,
+  type=""
+){
 
-  routeMarkers.forEach(m=>m.remove());
+  const el=
+    document.getElementById(
+      "routeStatus"
+    );
 
-  routeMarkers=[];
+  el.className=
+    "status "+type;
+
+  el.textContent=text;
 }
 
 
-function drawRouteStopMarkers(){
+/* ===============================
+   CLEAR ROUTE
+================================ */
 
-  clearRouteMarkers();
+function clearRoute(){
 
-  selectedOrders.forEach((r,i)=>{
+  if(
+    map.getLayer(
+      "nafis-route-line"
+    )
+  ){
+    map.removeLayer(
+      "nafis-route-line"
+    );
+  }
 
-    if(!validCoords(r))return;
+  if(
+    map.getSource(
+      "nafis-route"
+    )
+  ){
+    map.removeSource(
+      "nafis-route"
+    );
+  }
 
-    const el=document.createElement("div");
-
-    el.className="routePin";
-
-    el.textContent=i+1;
-
-
-    const marker=
-      new maplibregl.Marker({
-        element:el
-      })
-      .setLngLat([
-        getLng(r),
-        getLat(r)
-      ])
-      .addTo(map);
-
-
-    routeMarkers.push(marker);
-  });
+  document.getElementById(
+    "routeInfo"
+  ).innerHTML="";
 }
 
 
-/* =====================================================
-   TSP واقعی Map.ir
-===================================================== */
+/* ===============================
+   CLEAR PLAN
+================================ */
+
+function clearPlan(){
+
+  selectedOrders=[];
+
+  clearRoute();
+
+  renderStops();
+  renderOrders();
+
+  setRouteStatus(
+    "برنامه مسیر پاک شد."
+  );
+}
+
+
+/* ===============================
+   TSP MAP.IR
+================================ */
 
 async function optimizeRoute(){
 
-  const driver=selectedDriver();
+  const driver=
+    getDriver();
 
 
   if(!driver){
@@ -995,7 +1415,10 @@ async function optimizeRoute(){
 
 
   const capacity=
-    parseInt(driver["ظرفیت سفارش"]||"0",10);
+    parseInt(
+      driver["ظرفیت سفارش"]||"0",
+      10
+    );
 
 
   if(
@@ -1004,7 +1427,7 @@ async function optimizeRoute(){
   ){
 
     setRouteStatus(
-      `ظرفیت ${driver["نام و نام خانوادگی"]} برابر ${capacity} سفارش است، اما ${selectedOrders.length} سفارش انتخاب شده.`,
+      `ظرفیت راننده ${capacity} سفارش است؛ ${selectedOrders.length} سفارش انتخاب شده.`,
       "error"
     );
 
@@ -1013,7 +1436,9 @@ async function optimizeRoute(){
 
 
   if(
-    selectedOrders.some(r=>!validCoords(r))
+    selectedOrders.some(
+      r=>!validCoords(r)
+    )
   ){
 
     setRouteStatus(
@@ -1026,9 +1451,12 @@ async function optimizeRoute(){
 
 
   const btn=
-    document.getElementById("optimizeBtn");
+    document.getElementById(
+      "optimizeBtn"
+    );
 
   btn.disabled=true;
+
 
   setRouteStatus(
     "در حال محاسبه مسیر پیشنهادی توسط Map.ir...",
@@ -1041,16 +1469,11 @@ async function optimizeRoute(){
     const coords=
       selectedOrders
       .map(
-        r=>`${getLng(r)},${getLat(r)}`
+        r=>
+        `${getLng(r)},${getLat(r)}`
       )
       .join(";");
 
-
-    /*
-      برای تست اولیه:
-      مسیر بسته است و TSP اجازه دارد بهترین نقطه
-      شروع را بین سفارش‌ها انتخاب کند.
-    */
 
     const url=
       `https://map.ir/vrp/tsp/v1/driving/${coords}`+
@@ -1061,106 +1484,110 @@ async function optimizeRoute(){
       `&overview=full`;
 
 
-    const response=await fetch(url,{
-      method:"GET",
-      headers:{
-        "x-api-key":MAPIR_KEY
-      }
-    });
+    const response=
+      await fetch(
+        url,
+        {
+          method:"GET",
+
+          headers:{
+            "x-api-key":
+              MAPIR_KEY
+          }
+        }
+      );
 
 
     if(!response.ok){
 
-      const text=await response.text();
+      const text=
+        await response.text();
 
       throw new Error(
-        `HTTP ${response.status} - ${text.slice(0,150)}`
+        `HTTP ${response.status} - ${text.slice(0,180)}`
       );
     }
 
 
-    const data=await response.json();
+    const data=
+      await response.json();
 
 
     if(
-      data.code!=="Ok" &&
-      data.code!=="OK"
-    ){
-
-      throw new Error(
-        data.code ||
-        "Map.ir مسیر مناسبی برنگرداند."
-      );
-    }
-
-
-    if(
-      !data.waypoints ||
       !data.trips ||
       !data.trips.length
     ){
 
       throw new Error(
-        "ساختار پاسخ TSP کامل نیست."
+        data.message ||
+        data.code ||
+        "مسیر از Map.ir دریافت نشد."
       );
     }
 
 
     /*
-      waypoint_index ترتیب بهینه هر ورودی است.
+      مرتب کردن سفارش‌ها طبق
+      ترتیب پیشنهادی TSP
     */
 
-    const reordered=
-      selectedOrders
-      .map((order,index)=>({
+    if(
+      Array.isArray(data.waypoints)
+    ){
 
-        order,
+      selectedOrders=
+        selectedOrders
+        .map((order,index)=>({
 
-        position:
-          data.waypoints[index]
-          ?.waypoint_index ?? index
+          order,
 
-      }))
-      .sort(
-        (a,b)=>a.position-b.position
-      )
-      .map(x=>x.order);
+          position:
+            data.waypoints[index]
+            ?.waypoint_index
+            ?? index
+
+        }))
+        .sort(
+          (a,b)=>
+          a.position-b.position
+        )
+        .map(
+          item=>item.order
+        );
+    }
 
 
-    selectedOrders=reordered;
+    const trip=
+      data.trips[0];
 
 
     renderStops();
+    renderOrders();
 
-
-    const trip=data.trips[0];
-
-    drawRouteGeometry(
+    drawRoute(
       trip.geometry
     );
-
 
     showRouteResult(
       trip,
       driver
     );
 
-
-    fitRoute();
+    fitSelectedOrders();
 
 
     setRouteStatus(
-      `مسیر پیشنهادی برای ${driver["نام و نام خانوادگی"]} محاسبه شد.`,
+      `مسیر پیشنهادی برای ${driver["نام و نام خانوادگی"]} با موفقیت محاسبه شد.`,
       "success"
     );
 
 
-  }catch(err){
+  }catch(error){
 
-    console.error(err);
+    console.error(error);
 
     setRouteStatus(
-      `خطای API: ${err.message}`,
+      `خطای مسیریابی: ${error.message}`,
       "error"
     );
 
@@ -1171,29 +1598,20 @@ async function optimizeRoute(){
 }
 
 
-/* =====================================================
-   رسم مسیر
-===================================================== */
+/* ===============================
+   DRAW ROUTE
+================================ */
 
-function drawRouteGeometry(geometry){
-
-  if(!geometry)return;
-
-
-  let geo;
-
+function drawRoute(geometry){
 
   if(
-    geometry.type &&
-    geometry.coordinates
+    !geometry ||
+    !geometry.type ||
+    !geometry.coordinates
   ){
 
-    geo=geometry;
-
-  }else{
-
     throw new Error(
-      "هندسه مسیر GeoJSON نیست."
+      "هندسه مسیر معتبر نیست."
     );
   }
 
@@ -1201,69 +1619,93 @@ function drawRouteGeometry(geometry){
   const feature={
     type:"Feature",
     properties:{},
-    geometry:geo
+    geometry
   };
 
 
-  if(map.getSource("nafis-route")){
+  if(
+    map.getSource(
+      "nafis-route"
+    )
+  ){
 
-    map.getSource("nafis-route")
-      .setData(feature);
+    map.getSource(
+      "nafis-route"
+    ).setData(feature);
 
-  }else{
-
-    map.addSource(
-      "nafis-route",
-      {
-        type:"geojson",
-        data:feature
-      }
-    );
-
-
-    map.addLayer({
-      id:"nafis-route-line",
-      type:"line",
-      source:"nafis-route",
-
-      layout:{
-        "line-join":"round",
-        "line-cap":"round"
-      },
-
-      paint:{
-        "line-color":"#00656D",
-        "line-width":6,
-        "line-opacity":0.85
-      }
-    });
+    return;
   }
+
+
+  map.addSource(
+    "nafis-route",
+    {
+      type:"geojson",
+      data:feature
+    }
+  );
+
+
+  map.addLayer({
+
+    id:"nafis-route-line",
+
+    type:"line",
+
+    source:"nafis-route",
+
+    layout:{
+      "line-join":"round",
+      "line-cap":"round"
+    },
+
+    paint:{
+      "line-color":"#00656D",
+      "line-width":6,
+      "line-opacity":0.9
+    }
+  });
 }
 
 
-/* =====================================================
-   نتیجه مسیر
-===================================================== */
+/* ===============================
+   ROUTE RESULT
+================================ */
 
-function showRouteResult(trip,driver){
+function showRouteResult(
+  trip,
+  driver
+){
 
-  const distance=
-    Number(trip.distance||0)/1000;
+  const km=
+    Number(
+      trip.distance||0
+    )/1000;
+
 
   const minutes=
-    Number(trip.duration||0)/60;
+    Number(
+      trip.duration||0
+    )/60;
 
 
-  let timeText="";
+  let timeText;
 
 
   if(minutes>=60){
 
-    const h=Math.floor(minutes/60);
+    const h=
+      Math.floor(
+        minutes/60
+      );
 
-    const m=Math.round(minutes%60);
+    const m=
+      Math.round(
+        minutes%60
+      );
 
-    timeText=`${h} ساعت و ${m} دقیقه`;
+    timeText=
+      `${h} ساعت و ${m} دقیقه`;
 
   }else{
 
@@ -1272,16 +1714,22 @@ function showRouteResult(trip,driver){
   }
 
 
-  document.getElementById("routeInfo").innerHTML=`
+  document.getElementById(
+    "routeInfo"
+  ).innerHTML=`
 
     <div class="routeInfo">
 
-      <b>🚚 برنامه پیشنهادی ارسال</b>
+      <b>
+        🚚 مسیر پیشنهادی ارسال
+      </b>
 
       <br>
 
       راننده:
-      <b>${esc(driver["نام و نام خانوادگی"])}</b>
+      <b>
+        ${esc(driver["نام و نام خانوادگی"])}
+      </b>
 
       <br>
 
@@ -1290,17 +1738,17 @@ function showRouteResult(trip,driver){
 
       <br>
 
-      تعداد توقف:
+      تعداد سفارش:
       <b>${selectedOrders.length}</b>
 
       <br>
 
-      مسافت تقریبی:
-      <b>${distance.toFixed(1)} کیلومتر</b>
+      مسافت:
+      <b>${km.toFixed(1)} کیلومتر</b>
 
       <br>
 
-      زمان رانندگی تقریبی:
+      زمان رانندگی:
       <b>${timeText}</b>
 
     </div>
@@ -1308,13 +1756,14 @@ function showRouteResult(trip,driver){
 }
 
 
-/* =====================================================
-   Fit map
-===================================================== */
+/* ===============================
+   FIT
+================================ */
 
-function fitRoute(){
+function fitSelectedOrders(){
 
-  if(!selectedOrders.length)return;
+  if(!selectedOrders.length)
+    return;
 
 
   const bounds=
@@ -1338,7 +1787,7 @@ function fitRoute(){
     map.fitBounds(
       bounds,
       {
-        padding:80,
+        padding:100,
         maxZoom:13
       }
     );
@@ -1346,77 +1795,17 @@ function fitRoute(){
 }
 
 
-/* =====================================================
-   پاک کردن خط مسیر
-===================================================== */
+/* ===============================
+   EVENTS
+================================ */
 
-function clearRoute(){
+document.getElementById(
+  "selectModeBtn"
+).addEventListener(
+  "click",
+  toggleSelectionMode
+);
 
-  if(
-    map.getLayer("nafis-route-line")
-  ){
-
-    map.removeLayer(
-      "nafis-route-line"
-    );
-  }
-
-
-  if(
-    map.getSource("nafis-route")
-  ){
-
-    map.removeSource(
-      "nafis-route"
-    );
-  }
-
-
-  document.getElementById(
-    "routeInfo"
-  ).innerHTML="";
-}
-
-
-/* =====================================================
-   پاک کردن برنامه
-===================================================== */
-
-function clearPlan(){
-
-  selectedOrders=[];
-
-  clearRoute();
-
-  clearRouteMarkers();
-
-  renderStops();
-
-  setRouteStatus(
-    "برنامه مسیر پاک شد."
-  );
-}
-
-
-/* =====================================================
-   وضعیت مسیر
-===================================================== */
-
-function setRouteStatus(text,type=""){
-
-  const el=
-    document.getElementById("routeStatus");
-
-  el.className=
-    "status "+type;
-
-  el.textContent=text;
-}
-
-
-/* =====================================================
-   Eventها
-===================================================== */
 
 document.getElementById(
   "cityFilter"
@@ -1474,17 +1863,15 @@ document.getElementById(
 );
 
 
-/* =====================================================
-   شروع
-===================================================== */
+/* ===============================
+   START
+================================ */
 
-map.on("load",()=>{
-
-  loadData();
-
-});
+map.on(
+  "load",
+  loadData
+);
 
 </script>
-
 </body>
 </html>
