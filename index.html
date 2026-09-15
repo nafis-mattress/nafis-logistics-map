@@ -1,24 +1,29 @@
 <!doctype html>
 <html lang="fa" dir="rtl">
+
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 
 <title>نقشه لجستیک نفیس - متصل به Google Sheet</title>
 
-<link href="https://cdn.jsdelivr.net/npm/maplibre-gl@6.9.0/dist/maplibre-gl.css" rel="stylesheet">
+<link
+  href="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.css"
+  rel="stylesheet"
+/>
 
 <style>
+
 html,body{
   height:100%;
   margin:0;
   font-family:Tahoma,Arial,sans-serif;
-  background:#eef3f3
+  background:#eef3f3;
 }
 
 #map{
   position:absolute;
-  inset:0
+  inset:0;
 }
 
 .panel{
@@ -30,47 +35,50 @@ html,body{
   background:#fff;
   border-radius:16px;
   padding:14px 16px;
-  box-shadow:0 8px 30px #0002
+  box-shadow:0 8px 30px #0002;
 }
 
 .title{
   font-weight:700;
   color:#00656D;
   font-size:18px;
-  margin-bottom:8px
+  margin-bottom:8px;
 }
 
 .row{
   display:flex;
   gap:8px;
-  margin-top:8px
+  margin-top:8px;
 }
 
-select,input,button{
+select,
+input,
+button{
   font-family:inherit;
   border:1px solid #d7dddd;
   border-radius:10px;
   padding:8px;
-  font-size:12px
+  font-size:12px;
 }
 
-select,input{
+select,
+input{
   flex:1;
-  min-width:0
+  min-width:0;
 }
 
 button{
   background:#00656D;
   color:#fff;
   border:none;
-  cursor:pointer
+  cursor:pointer;
 }
 
 .meta{
   font-size:11px;
   color:#666;
   line-height:1.8;
-  margin-top:8px
+  margin-top:8px;
 }
 
 .status{
@@ -79,7 +87,7 @@ button{
   padding:7px 9px;
   border-radius:10px;
   background:#eef7f7;
-  color:#00656D
+  color:#00656D;
 }
 
 .pin{
@@ -88,23 +96,23 @@ button{
   border-radius:50% 50% 50% 0;
   border:3px solid #fff;
   box-shadow:0 2px 8px #0004;
-  transform:rotate(-45deg)
+  transform:rotate(-45deg);
 }
 
 .pin.ready{
-  background:#00656D
+  background:#00656D;
 }
 
 .pin.wait{
-  background:#D09039
+  background:#D09039;
 }
 
 .pin.planned{
-  background:#3d6fb6
+  background:#3d6fb6;
 }
 
 .pin.delivered{
-  background:#8b8b8b
+  background:#8b8b8b;
 }
 
 .legend{
@@ -113,7 +121,7 @@ button{
   flex-wrap:wrap;
   margin-top:10px;
   font-size:10px;
-  color:#555
+  color:#555;
 }
 
 .legend span:before{
@@ -123,20 +131,21 @@ button{
   height:9px;
   border-radius:50%;
   margin-left:4px;
-  vertical-align:middle
+  vertical-align:middle;
 }
 
 .legend .a:before{
-  background:#00656D
+  background:#00656D;
 }
 
 .legend .b:before{
-  background:#D09039
+  background:#D09039;
 }
 
 .legend .c:before{
-  background:#3d6fb6
+  background:#3d6fb6;
 }
+
 </style>
 </head>
 
@@ -157,13 +166,27 @@ button{
     </select>
 
     <select id="statusFilter">
-      <option value="">همه وضعیت‌های باز</option>
-      <option value="آماده برنامه‌ریزی">آماده برنامه‌ریزی</option>
-      <option value="در انتظار تولید">در انتظار تولید</option>
-      <option value="ارسال برنامه‌ریزی شده">ارسال برنامه‌ریزی شده</option>
+
+      <option value="">
+        همه وضعیت‌های باز
+      </option>
+
+      <option value="آماده برنامه‌ریزی">
+        آماده برنامه‌ریزی
+      </option>
+
+      <option value="در انتظار تولید">
+        در انتظار تولید
+      </option>
+
+      <option value="ارسال برنامه‌ریزی شده">
+        ارسال برنامه‌ریزی شده
+      </option>
+
     </select>
 
   </div>
+
 
   <div class="row">
 
@@ -178,15 +201,28 @@ button{
 
   </div>
 
+
   <div id="status" class="status">
     در حال دریافت اطلاعات Google Sheet…
   </div>
 
+
   <div class="legend">
-    <span class="a">آماده</span>
-    <span class="b">انتظار تولید</span>
-    <span class="c">برنامه‌ریزی شده</span>
+
+    <span class="a">
+      آماده
+    </span>
+
+    <span class="b">
+      انتظار تولید
+    </span>
+
+    <span class="c">
+      برنامه‌ریزی شده
+    </span>
+
   </div>
+
 
   <div class="meta">
     سفارش «تحویل شده» روی نقشه نمایش داده نمی‌شود.
@@ -196,39 +232,65 @@ button{
 </div>
 
 
-<script src="https://cdn.jsdelivr.net/npm/maplibre-gl@6.9.0/dist/maplibre-gl.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
 
 <script>
+
+/* =========================
+   Google Sheet
+========================= */
 
 const CSV_URL =
 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTZn_pFhDgKsUuFJ6Rj4RKzJcRTH64KoTM9rTE0N43RqmUCj7E-UnoYxRMlBhsicUytqxWpYKzQkUa7/pub?gid=0&single=true&output=csv';
 
 
+/* =========================
+   Map.ir API Key
+========================= */
+
 const KEY =
 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6ImUzM2Y0N2UyMDkxYTI2NzA0NjQzYjc5OTU2ZjQ1MDBlMTc3NzA2YmI2NzBhODM5NjFmMjdiODA0YzZmMmFlYTRmNGZjODM4ZDQwZmZjYzhkIn0.eyJhdWQiOiI0NDAyOCIsImp0aSI6ImUzM2Y0N2UyMDkxYTI2NzA0NjQzYjc5OTU2ZjQ1MDBlMTc3NzA2YmI2NzBhODM5NjFmMjdiODA0YzZmMmFlYTRmNGZjODM4ZDQwZmZjYzhkIiwiaWF0IjoxNzg5NDcxMDE1LCJuYmYiOjE3ODk0NzEwMTUsImV4cCI6MTc5MjE1MzAxNSwic3ViIjoiIiwic2NvcGVzIjpbImJhc2ljIl19.iFEs3zfgdbVXTenqn73XcGuy5PZ7hsBnpyHES8_hZb0oiEfVlmaaswiKwrQOyg0ty7rxpNGoJ8ifrC8yy7-k4YMdxXHgrthNson3d7fLO9TeogDtQ2W2lCBjr_MBAMFdLeJUIkw4x6up0TSPEC9jXWsm0FXKm-ATn2E-JNnXwSr5LhbFAJW2wktb1yXt8Mke3PLoF2Q3dtNIVHs3ZxACQMtvQ9Ufp--jlxDc3eydcQQCelFWHbtbeyhRvi08C6TKn711a5Z3mzUGKVNqusBBN-f5FdKwADi6kC8AECyTYSPx1wNfWa3ezaDMMyTHts-vHJIg8ipwjMCmP7WafvkHEA';
 
+
+/* =========================
+   Map
+========================= */
 
 const map = new maplibregl.Map({
 
   container:"map",
 
-  style:"https://map.ir/vector/styles/main/mapir-xyz-style.json",
+  style:
+  "https://map.ir/vector/styles/main/mapir-xyz-style.json",
 
-  center:[51.2,35.3],
+  center:[
+    51.2,
+    35.3
+  ],
 
   zoom:7.2,
 
-  transformRequest:(url)=>
-    url.includes("map.ir")
-    ?
-    {
-      url,
-      headers:{
-        "x-api-key":KEY
-      }
+  transformRequest:(url)=>{
+
+    if(url.includes("map.ir")){
+
+      return{
+
+        url:url,
+
+        headers:{
+          "x-api-key":KEY
+        }
+
+      };
+
     }
-    :
-    {url}
+
+    return{
+      url:url
+    };
+
+  }
 
 });
 
@@ -255,22 +317,30 @@ function parseCSV(text){
   let field="";
   let q=false;
 
+
   for(let i=0;i<text.length;i++){
 
     const c=text[i];
     const n=text[i+1];
 
+
     if(c=='"'){
 
       if(q && n=='"'){
+
         field+='"';
         i++;
+
       }
+
       else{
+
         q=!q;
+
       }
 
     }
+
 
     else if(c==',' && !q){
 
@@ -279,21 +349,42 @@ function parseCSV(text){
 
     }
 
-    else if((c=='\n'||c=='\r') && !q){
 
-      if(c=='\r' && n=='\n')
+    else if(
+      (c=='\n' || c=='\r')
+      &&
+      !q
+    ){
+
+      if(
+        c=='\r'
+        &&
+        n=='\n'
+      ){
         i++;
+      }
+
 
       row.push(field);
 
       field="";
 
-      if(row.some(x=>x!==""))
+
+      if(
+        row.some(
+          x=>x!==""
+        )
+      ){
+
         out.push(row);
+
+      }
+
 
       row=[];
 
     }
+
 
     else{
 
@@ -303,13 +394,19 @@ function parseCSV(text){
 
   }
 
-  if(field||row.length){
+
+  if(
+    field
+    ||
+    row.length
+  ){
 
     row.push(field);
 
     out.push(row);
 
   }
+
 
   return out;
 
@@ -322,34 +419,59 @@ function parseCSV(text){
 
 function esc(s){
 
-  return String(s??"")
+  return String(
+    s ?? ""
+  )
   .replace(
+
     /[&<>"]/g,
+
     m=>({
+
       "&":"&amp;",
       "<":"&lt;",
       ">":"&gt;",
       '"':"&quot;"
+
     }[m])
+
   );
 
 }
 
 
 /* =========================
-   Status Colors
+   Status
 ========================= */
 
 function statusClass(s){
 
-  if(s==="آماده برنامه‌ریزی")
+  if(
+    s==="آماده برنامه‌ریزی"
+  ){
+
     return "ready";
 
-  if(s==="در انتظار تولید")
+  }
+
+
+  if(
+    s==="در انتظار تولید"
+  ){
+
     return "wait";
 
-  if(s==="ارسال برنامه‌ریزی شده")
+  }
+
+
+  if(
+    s==="ارسال برنامه‌ریزی شده"
+  ){
+
     return "planned";
+
+  }
+
 
   return "delivered";
 
@@ -357,14 +479,18 @@ function statusClass(s){
 
 
 /* =========================
-   Remove old markers
+   Clear Markers
 ========================= */
 
 function clearMarkers(){
 
   markers.forEach(
-    m=>m.remove()
+
+    marker=>
+      marker.remove()
+
   );
+
 
   markers=[];
 
@@ -372,7 +498,7 @@ function clearMarkers(){
 
 
 /* =========================
-   Render orders
+   Render Orders
 ========================= */
 
 function render(){
@@ -381,11 +507,15 @@ function render(){
 
 
   const city =
-    document.getElementById("city").value;
+    document
+    .getElementById("city")
+    .value;
 
 
-  const st =
-    document.getElementById("statusFilter").value;
+  const selectedStatus =
+    document
+    .getElementById("statusFilter")
+    .value;
 
 
   const term =
@@ -397,58 +527,90 @@ function render(){
 
 
   const filtered =
-  rows.filter(r=>{
+    rows.filter(r=>{
 
 
-    if(
-      (r["وضعیت ارسال"]||"").trim()
-      ===
-      "تحویل شده"
-    )
-      return false;
+      const orderStatus =
+        (r["وضعیت ارسال"] || "")
+        .trim();
 
 
-    if(
-      city &&
-      r["شهر"]!==city
-    )
-      return false;
+      /* Delivered orders hidden */
 
+      if(
+        orderStatus === "تحویل شده"
+      ){
 
-    if(
-      st &&
-      r["وضعیت ارسال"]!==st
-    )
-      return false;
-
-
-    if(term){
-
-      const hay =
-      [
-        r["کد سفارش"],
-        r["نام مشتری"],
-        r["موبایل مشتری"],
-        r["شهر"],
-        r["آدرس"]
-      ]
-      .join(" ")
-      .toLowerCase();
-
-
-      if(!hay.includes(term))
         return false;
 
-    }
+      }
 
 
-    return true;
+      /* City */
 
-  });
+      if(
+        city
+        &&
+        r["شهر"] !== city
+      ){
+
+        return false;
+
+      }
+
+
+      /* Status */
+
+      if(
+        selectedStatus
+        &&
+        r["وضعیت ارسال"] !== selectedStatus
+      ){
+
+        return false;
+
+      }
+
+
+      /* Search */
+
+      if(term){
+
+        const hay = [
+
+          r["کد سفارش"],
+          r["شماره سفارش"],
+          r["نام مشتری"],
+          r["موبایل مشتری"],
+          r["شهر"],
+          r["آدرس"]
+
+        ]
+        .join(" ")
+        .toLowerCase();
+
+
+        if(
+          !hay.includes(term)
+        ){
+
+          return false;
+
+        }
+
+      }
+
+
+      return true;
+
+    });
 
 
   const bounds =
     new maplibregl.LngLatBounds();
+
+
+  let validMarkers=0;
 
 
   filtered.forEach(r=>{
@@ -470,9 +632,17 @@ function render(){
       !Number.isFinite(lat)
       ||
       !Number.isFinite(lng)
-    )
+    ){
+
       return;
 
+    }
+
+
+    validMarkers++;
+
+
+    /* Marker */
 
     const el =
       document.createElement("div");
@@ -486,141 +656,155 @@ function render(){
       );
 
 
-    const html = `
+    /* Popup */
 
-    <div
-      dir="rtl"
-      style="
-      direction:rtl;
-      text-align:right;
-      font-family:Tahoma,Arial,sans-serif;
-      line-height:1.9;
-      min-width:220px
-      "
-    >
-
-      <b>
-        ${esc(r["نام مشتری"])}
-      </b>
-
-      <br>
-
-      کد سفارش:
-      ${esc(r["کد سفارش"])}
-
-      <br>
-
-      موبایل:
-      ${esc(r["موبایل مشتری"])}
-
-      <br>
-
-      ${esc(r["شهر"])}
-      -
-      ${esc(r["آدرس"])}
-
-      <br>
-
-      کالا:
-      ${esc(r["اقلام سفارش"])}
-
-      <br>
-
-      تسویه:
-      ${esc(r["وضعیت تسویه"])}
-
-      <br>
-
-      وضعیت:
-      <b>
-        ${esc(r["وضعیت ارسال"])}
-      </b>
+    const orderCode =
+      r["کد سفارش"]
+      ||
+      r["شماره سفارش"]
+      ||
+      "";
 
 
-      ${
-        r["راننده"]
-        ?
-        `<br>
-        راننده:
-        ${esc(r["راننده"])}`
-        :
-        ""
-      }
+    const popupHTML = `
+
+      <div
+        dir="rtl"
+        style="
+          direction:rtl;
+          text-align:right;
+          font-family:Tahoma,Arial,sans-serif;
+          line-height:1.9;
+          min-width:220px;
+        "
+      >
+
+        <b>
+          ${esc(r["نام مشتری"])}
+        </b>
+
+        <br>
+
+        کد سفارش:
+        ${esc(orderCode)}
+
+        <br>
+
+        موبایل:
+        ${esc(r["موبایل مشتری"])}
+
+        <br>
+
+        ${esc(r["شهر"])}
+        -
+        ${esc(r["آدرس"])}
+
+        <br>
+
+        کالا:
+        ${esc(r["اقلام سفارش"])}
+
+        <br>
+
+        وضعیت:
+        <b>
+          ${esc(r["وضعیت ارسال"])}
+        </b>
 
 
-      ${
-        r["تاریخ ارسال"]
-        ?
-        `<br>
-        تاریخ ارسال:
-        ${esc(r["تاریخ ارسال"])}`
-        :
-        ""
-      }
+        ${
+          r["راننده"]
+          ?
+          `<br>راننده: ${esc(r["راننده"])}`
+          :
+          ""
+        }
 
 
-      ${
-        r["توضیحات"]
-        ?
-        `<br>
-        توضیحات:
-        ${esc(r["توضیحات"])}`
-        :
-        ""
-      }
+        ${
+          r["تاریخ ارسال"]
+          ?
+          `<br>تاریخ ارسال: ${esc(r["تاریخ ارسال"])}`
+          :
+          ""
+        }
 
-    </div>
+
+        ${
+          r["توضیحات"]
+          ?
+          `<br>توضیحات: ${esc(r["توضیحات"])}`
+          :
+          ""
+        }
+
+      </div>
 
     `;
+
+
+    const popup =
+      new maplibregl.Popup({
+        offset:25
+      })
+      .setHTML(
+        popupHTML
+      );
 
 
     const marker =
       new maplibregl.Marker({
         element:el
       })
-
-      .setLngLat(
-        [lng,lat]
-      )
-
+      .setLngLat([
+        lng,
+        lat
+      ])
       .setPopup(
-
-        new maplibregl.Popup({
-          offset:25
-        })
-
-        .setHTML(html)
-
+        popup
       )
-
-      .addTo(map);
-
-
-    markers.push(marker);
+      .addTo(
+        map
+      );
 
 
-    bounds.extend(
-      [lng,lat]
+    markers.push(
+      marker
     );
+
+
+    bounds.extend([
+      lng,
+      lat
+    ]);
 
   });
 
 
+  /* Counter */
+
   document
   .getElementById("status")
   .textContent =
-  `${filtered.length} سفارش باز روی نقشه | کل داده‌های شیت: ${rows.length}`;
+    `${validMarkers} سفارش باز روی نقشه | کل داده‌های شیت: ${rows.length}`;
 
 
-  if(filtered.length){
+  /* Fit map */
+
+  if(validMarkers){
 
     map.fitBounds(
+
       bounds,
+
       {
+
         padding:80,
         maxZoom:12,
         duration:700
+
       }
+
     );
 
   }
@@ -634,9 +818,9 @@ function render(){
 
 async function loadData(){
 
-
   const status =
-    document.getElementById("status");
+    document
+    .getElementById("status");
 
 
   status.textContent =
@@ -649,46 +833,67 @@ async function loadData(){
     const url =
       CSV_URL
       +
-      (CSV_URL.includes("?")?"&":"?")
+      (
+        CSV_URL.includes("?")
+        ?
+        "&"
+        :
+        "?"
+      )
       +
       "_="
       +
       Date.now();
 
 
-    const res =
+    const response =
       await fetch(
+
         url,
+
         {
           cache:"no-store"
         }
+
       );
 
 
-    if(!res.ok)
+    if(
+      !response.ok
+    ){
+
       throw new Error(
-        "HTTP "+res.status
+        "HTTP "
+        +
+        response.status
       );
+
+    }
 
 
     const text =
-      await res.text();
+      await response.text();
 
 
     const arr =
       parseCSV(text);
 
 
-    if(arr.length<2)
+    if(
+      arr.length < 2
+    ){
+
       throw new Error(
         "داده‌ای دریافت نشد"
       );
+
+    }
 
 
     const headers =
       arr[0]
       .map(
-        x=>x.trim()
+        item=>item.trim()
       );
 
 
@@ -696,68 +901,92 @@ async function loadData(){
       arr
       .slice(1)
       .map(
-        a=>
-        Object.fromEntries(
-          headers.map(
-            (h,i)=>
-            [
-              h,
-              (a[i]??"").trim()
-            ]
+
+        row=>
+          Object.fromEntries(
+
+            headers.map(
+
+              (header,index)=>[
+
+                header,
+
+                (
+                  row[index]
+                  ??
+                  ""
+                ).trim()
+
+              ]
+
+            )
+
           )
-        )
+
       );
 
 
-    const cities =
-      [
-        ...new Set(
-          rows
-          .map(
-            r=>r["شهر"]
-          )
-          .filter(Boolean)
+    /* Cities */
+
+    const cities = [
+
+      ...new Set(
+
+        rows
+        .map(
+          r=>r["شهر"]
         )
-      ]
-      .sort();
+        .filter(Boolean)
+
+      )
+
+    ]
+    .sort();
 
 
-    const sel =
-      document.getElementById("city");
+    const citySelect =
+      document
+      .getElementById("city");
 
 
-    const old =
-      sel.value;
+    const oldCity =
+      citySelect.value;
 
 
-    sel.innerHTML =
+    citySelect.innerHTML =
+
       '<option value="">همه شهرها</option>'
+
       +
+
       cities
       .map(
-        c=>
-        `<option>${esc(c)}</option>`
+
+        city=>
+          `<option value="${esc(city)}">${esc(city)}</option>`
+
       )
       .join("");
 
 
-    sel.value=old;
+    citySelect.value =
+      oldCity;
 
 
     render();
 
-
   }
 
-  catch(e){
 
+  catch(error){
 
-    console.error(e);
+    console.error(
+      error
+    );
 
 
     status.innerHTML =
-    "اتصال مستقیم مرورگر به CSV ناموفق بود.<br>اگر این پیام را دیدی، اسکرین‌شات بفرست تا روش بعدی را فعال کنیم.";
-
+      "اتصال مستقیم مرورگر به CSV ناموفق بود.<br>اگر این پیام را دیدی، اسکرین‌شات بفرست.";
 
   }
 
@@ -765,7 +994,7 @@ async function loadData(){
 
 
 /* =========================
-   Events
+   Controls
 ========================= */
 
 document
@@ -792,11 +1021,14 @@ document
 render;
 
 
+/* =========================
+   Start
+========================= */
+
 map.on(
   "load",
   loadData
 );
-
 
 </script>
 
