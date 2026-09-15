@@ -3,159 +3,802 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+
 <title>نقشه لجستیک نفیس - متصل به Google Sheet</title>
-<link href="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet">
+
+<link href="https://cdn.jsdelivr.net/npm/maplibre-gl@6.9.0/dist/maplibre-gl.css" rel="stylesheet">
+
 <style>
-html,body{height:100%;margin:0;font-family:Tahoma,Arial,sans-serif;background:#eef3f3}
-#map{position:absolute;inset:0}
-.panel{position:absolute;z-index:10;top:14px;right:14px;width:340px;background:#fff;border-radius:16px;padding:14px 16px;box-shadow:0 8px 30px #0002}
-.title{font-weight:700;color:#00656D;font-size:18px;margin-bottom:8px}
-.row{display:flex;gap:8px;margin-top:8px}
-select,input,button{font-family:inherit;border:1px solid #d7dddd;border-radius:10px;padding:8px;font-size:12px}
-select,input{flex:1;min-width:0}
-button{background:#00656D;color:#fff;border:none;cursor:pointer}
-.meta{font-size:11px;color:#666;line-height:1.8;margin-top:8px}
-.status{margin-top:8px;font-size:12px;padding:7px 9px;border-radius:10px;background:#eef7f7;color:#00656D}
-.pin{width:22px;height:22px;border-radius:50% 50% 50% 0;border:3px solid #fff;box-shadow:0 2px 8px #0004;transform:rotate(-45deg)}
-.pin.ready{background:#00656D}
-.pin.wait{background:#D09039}
-.pin.planned{background:#3d6fb6}
-.pin.delivered{background:#8b8b8b}
-.legend{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;font-size:10px;color:#555}
-.legend span:before{content:"";display:inline-block;width:9px;height:9px;border-radius:50%;margin-left:4px;vertical-align:middle}
-.legend .a:before{background:#00656D} .legend .b:before{background:#D09039} .legend .c:before{background:#3d6fb6}
+html,body{
+  height:100%;
+  margin:0;
+  font-family:Tahoma,Arial,sans-serif;
+  background:#eef3f3
+}
+
+#map{
+  position:absolute;
+  inset:0
+}
+
+.panel{
+  position:absolute;
+  z-index:10;
+  top:14px;
+  right:14px;
+  width:340px;
+  background:#fff;
+  border-radius:16px;
+  padding:14px 16px;
+  box-shadow:0 8px 30px #0002
+}
+
+.title{
+  font-weight:700;
+  color:#00656D;
+  font-size:18px;
+  margin-bottom:8px
+}
+
+.row{
+  display:flex;
+  gap:8px;
+  margin-top:8px
+}
+
+select,input,button{
+  font-family:inherit;
+  border:1px solid #d7dddd;
+  border-radius:10px;
+  padding:8px;
+  font-size:12px
+}
+
+select,input{
+  flex:1;
+  min-width:0
+}
+
+button{
+  background:#00656D;
+  color:#fff;
+  border:none;
+  cursor:pointer
+}
+
+.meta{
+  font-size:11px;
+  color:#666;
+  line-height:1.8;
+  margin-top:8px
+}
+
+.status{
+  margin-top:8px;
+  font-size:12px;
+  padding:7px 9px;
+  border-radius:10px;
+  background:#eef7f7;
+  color:#00656D
+}
+
+.pin{
+  width:22px;
+  height:22px;
+  border-radius:50% 50% 50% 0;
+  border:3px solid #fff;
+  box-shadow:0 2px 8px #0004;
+  transform:rotate(-45deg)
+}
+
+.pin.ready{
+  background:#00656D
+}
+
+.pin.wait{
+  background:#D09039
+}
+
+.pin.planned{
+  background:#3d6fb6
+}
+
+.pin.delivered{
+  background:#8b8b8b
+}
+
+.legend{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-top:10px;
+  font-size:10px;
+  color:#555
+}
+
+.legend span:before{
+  content:"";
+  display:inline-block;
+  width:9px;
+  height:9px;
+  border-radius:50%;
+  margin-left:4px;
+  vertical-align:middle
+}
+
+.legend .a:before{
+  background:#00656D
+}
+
+.legend .b:before{
+  background:#D09039
+}
+
+.legend .c:before{
+  background:#3d6fb6
+}
 </style>
 </head>
+
 <body>
+
 <div id="map"></div>
+
 <div class="panel">
-  <div class="title">نقشه لجستیک نفیس</div>
+
+  <div class="title">
+    نقشه لجستیک نفیس
+  </div>
+
   <div class="row">
-    <select id="city"><option value="">همه شهرها</option></select>
+
+    <select id="city">
+      <option value="">همه شهرها</option>
+    </select>
+
     <select id="statusFilter">
       <option value="">همه وضعیت‌های باز</option>
       <option value="آماده برنامه‌ریزی">آماده برنامه‌ریزی</option>
       <option value="در انتظار تولید">در انتظار تولید</option>
       <option value="ارسال برنامه‌ریزی شده">ارسال برنامه‌ریزی شده</option>
     </select>
-  </div>
-  <div class="row">
-    <input id="search" placeholder="جستجو نام، موبایل یا کد سفارش">
-    <button id="reload">بروزرسانی</button>
-  </div>
-  <div id="status" class="status">در حال دریافت اطلاعات Google Sheet…</div>
-  <div class="legend"><span class="a">آماده</span><span class="b">انتظار تولید</span><span class="c">برنامه‌ریزی شده</span></div>
-  <div class="meta">سفارش «تحویل شده» روی نقشه نمایش داده نمی‌شود. با Refresh یا دکمه بروزرسانی، داده‌های جدید شیت خوانده می‌شوند.</div>
-</div>
-<script src="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
-<script>
-const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTZn_pFhDgKsUuFJ6Rj4RKzJcRTH64KoTM9rTE0N43RqmUCj7E-UnoYxRMlBhsicUytqxWpYKzQkUa7/pub?gid=0&single=true&output=csv';
-const KEY = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6ImUzM2Y0N2UyMDkxYTI2NzA0NjQzYjc5OTU2ZjQ1MDBlMTc3NzA2YmI2NzBhODM5NjFmMjdiODA0YzZmMmFlYTRmNGZjODM4ZDQwZmZjYzhkIn0.eyJhdWQiOiI0NDAyOCIsImp0aSI6ImUzM2Y0N2UyMDkxYTI2NzA0NjQzYjc5OTU2ZjQ1MDBlMTc3NzA2YmI2NzBhODM5NjFmMjdiODA0YzZmMmFlYTRmNGZjODM4ZDQwZmZjYzhkIiwiaWF0IjoxNzg5NDcxMDE1LCJuYmYiOjE3ODk0NzEwMTUsImV4cCI6MTc5MjE1MzAxNSwic3ViIjoiIiwic2NvcGVzIjpbImJhc2ljIl19.iFEs3zfgdbVXTenqn73XcGuy5PZ7hsBnpyHES8_hZb0oiEfVlmaaswiKwrQOyg0ty7rxpNGoJ8ifrC8yy7-k4YMdxXHgrthNson3d7fLO9TeogDtQ2W2lCBjr_MBAMFdLeJUIkw4x6up0TSPEC9jXWsm0FXKm-ATn2E-JNnXwSr5LhbFAJW2wktb1yXt8Mke3PLoF2Q3dtNIVHs3ZxACQMtvQ9Ufp--jlxDc3eydcQQCelFWHbtbeyhRvi08C6TKn711a5Z3mzUGKVNqusBBN-f5FdKwADi6kC8AECyTYSPx1wNfWa3ezaDMMyTHts-vHJIg8ipwjMCmP7WafvkHEA';
-const map = new maplibregl.Map({
-  container:"map",
-  style:"https://map.ir/vector/styles/main/mapir-xyz-style.json",
-  center:[51.2,35.3], zoom:7.2,
-  transformRequest:(url)=>url.includes("map.ir")?{url,headers:{"x-api-key":KEY}}:{url}
-});
-map.addControl(new maplibregl.NavigationControl(),"bottom-left");
 
-let rows=[], markers=[];
+  </div>
+
+  <div class="row">
+
+    <input
+      id="search"
+      placeholder="جستجو نام، موبایل یا کد سفارش"
+    >
+
+    <button id="reload">
+      بروزرسانی
+    </button>
+
+  </div>
+
+  <div id="status" class="status">
+    در حال دریافت اطلاعات Google Sheet…
+  </div>
+
+  <div class="legend">
+    <span class="a">آماده</span>
+    <span class="b">انتظار تولید</span>
+    <span class="c">برنامه‌ریزی شده</span>
+  </div>
+
+  <div class="meta">
+    سفارش «تحویل شده» روی نقشه نمایش داده نمی‌شود.
+    با Refresh یا دکمه بروزرسانی، داده‌های جدید شیت خوانده می‌شوند.
+  </div>
+
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/maplibre-gl@6.9.0/dist/maplibre-gl.js"></script>
+
+<script>
+
+const CSV_URL =
+'https://docs.google.com/spreadsheets/d/e/2PACX-1vTZn_pFhDgKsUuFJ6Rj4RKzJcRTH64KoTM9rTE0N43RqmUCj7E-UnoYxRMlBhsicUytqxWpYKzQkUa7/pub?gid=0&single=true&output=csv';
+
+
+const KEY =
+'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6ImUzM2Y0N2UyMDkxYTI2NzA0NjQzYjc5OTU2ZjQ1MDBlMTc3NzA2YmI2NzBhODM5NjFmMjdiODA0YzZmMmFlYTRmNGZjODM4ZDQwZmZjYzhkIn0.eyJhdWQiOiI0NDAyOCIsImp0aSI6ImUzM2Y0N2UyMDkxYTI2NzA0NjQzYjc5OTU2ZjQ1MDBlMTc3NzA2YmI2NzBhODM5NjFmMjdiODA0YzZmMmFlYTRmNGZjODM4ZDQwZmZjYzhkIiwiaWF0IjoxNzg5NDcxMDE1LCJuYmYiOjE3ODk0NzEwMTUsImV4cCI6MTc5MjE1MzAxNSwic3ViIjoiIiwic2NvcGVzIjpbImJhc2ljIl19.iFEs3zfgdbVXTenqn73XcGuy5PZ7hsBnpyHES8_hZb0oiEfVlmaaswiKwrQOyg0ty7rxpNGoJ8ifrC8yy7-k4YMdxXHgrthNson3d7fLO9TeogDtQ2W2lCBjr_MBAMFdLeJUIkw4x6up0TSPEC9jXWsm0FXKm-ATn2E-JNnXwSr5LhbFAJW2wktb1yXt8Mke3PLoF2Q3dtNIVHs3ZxACQMtvQ9Ufp--jlxDc3eydcQQCelFWHbtbeyhRvi08C6TKn711a5Z3mzUGKVNqusBBN-f5FdKwADi6kC8AECyTYSPx1wNfWa3ezaDMMyTHts-vHJIg8ipwjMCmP7WafvkHEA';
+
+
+const map = new maplibregl.Map({
+
+  container:"map",
+
+  style:"https://map.ir/vector/styles/main/mapir-xyz-style.json",
+
+  center:[51.2,35.3],
+
+  zoom:7.2,
+
+  transformRequest:(url)=>
+    url.includes("map.ir")
+    ?
+    {
+      url,
+      headers:{
+        "x-api-key":KEY
+      }
+    }
+    :
+    {url}
+
+});
+
+
+map.addControl(
+  new maplibregl.NavigationControl(),
+  "bottom-left"
+);
+
+
+let rows=[];
+let markers=[];
+
+
+/* =========================
+   CSV Parser
+========================= */
 
 function parseCSV(text){
-  const out=[]; let row=[], field="", q=false;
+
+  const out=[];
+
+  let row=[];
+  let field="";
+  let q=false;
+
   for(let i=0;i<text.length;i++){
-    const c=text[i], n=text[i+1];
+
+    const c=text[i];
+    const n=text[i+1];
+
     if(c=='"'){
-      if(q && n=='"'){field+='"'; i++;} else q=!q;
-    } else if(c==',' && !q){row.push(field); field="";}
+
+      if(q && n=='"'){
+        field+='"';
+        i++;
+      }
+      else{
+        q=!q;
+      }
+
+    }
+
+    else if(c==',' && !q){
+
+      row.push(field);
+      field="";
+
+    }
+
     else if((c=='\n'||c=='\r') && !q){
-      if(c=='\r' && n=='\n') i++;
-      row.push(field); field="";
-      if(row.some(x=>x!=="")) out.push(row);
+
+      if(c=='\r' && n=='\n')
+        i++;
+
+      row.push(field);
+
+      field="";
+
+      if(row.some(x=>x!==""))
+        out.push(row);
+
       row=[];
-    } else field+=c;
+
+    }
+
+    else{
+
+      field+=c;
+
+    }
+
   }
-  if(field||row.length){row.push(field);out.push(row)}
+
+  if(field||row.length){
+
+    row.push(field);
+
+    out.push(row);
+
+  }
+
   return out;
+
 }
 
-function esc(s){return String(s??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]))}
+
+/* =========================
+   HTML Escape
+========================= */
+
+function esc(s){
+
+  return String(s??"")
+  .replace(
+    /[&<>"]/g,
+    m=>({
+      "&":"&amp;",
+      "<":"&lt;",
+      ">":"&gt;",
+      '"':"&quot;"
+    }[m])
+  );
+
+}
+
+
+/* =========================
+   Status Colors
+========================= */
 
 function statusClass(s){
-  if(s==="آماده برنامه‌ریزی") return "ready";
-  if(s==="در انتظار تولید") return "wait";
-  if(s==="ارسال برنامه‌ریزی شده") return "planned";
+
+  if(s==="آماده برنامه‌ریزی")
+    return "ready";
+
+  if(s==="در انتظار تولید")
+    return "wait";
+
+  if(s==="ارسال برنامه‌ریزی شده")
+    return "planned";
+
   return "delivered";
+
 }
 
-function clearMarkers(){markers.forEach(m=>m.remove());markers=[]}
+
+/* =========================
+   Remove old markers
+========================= */
+
+function clearMarkers(){
+
+  markers.forEach(
+    m=>m.remove()
+  );
+
+  markers=[];
+
+}
+
+
+/* =========================
+   Render orders
+========================= */
 
 function render(){
+
   clearMarkers();
-  const city=document.getElementById("city").value;
-  const st=document.getElementById("statusFilter").value;
-  const term=document.getElementById("search").value.trim().toLowerCase();
-  const filtered=rows.filter(r=>{
-    if((r["وضعیت ارسال"]||"").trim()==="تحویل شده") return false;
-    if(city && r["شهر"]!==city) return false;
-    if(st && r["وضعیت ارسال"]!==st) return false;
+
+
+  const city =
+    document.getElementById("city").value;
+
+
+  const st =
+    document.getElementById("statusFilter").value;
+
+
+  const term =
+    document
+    .getElementById("search")
+    .value
+    .trim()
+    .toLowerCase();
+
+
+  const filtered =
+  rows.filter(r=>{
+
+
+    if(
+      (r["وضعیت ارسال"]||"").trim()
+      ===
+      "تحویل شده"
+    )
+      return false;
+
+
+    if(
+      city &&
+      r["شهر"]!==city
+    )
+      return false;
+
+
+    if(
+      st &&
+      r["وضعیت ارسال"]!==st
+    )
+      return false;
+
+
     if(term){
-      const hay=[r["کد سفارش"],r["نام مشتری"],r["موبایل مشتری"],r["شهر"],r["آدرس"]].join(" ").toLowerCase();
-      if(!hay.includes(term)) return false;
+
+      const hay =
+      [
+        r["کد سفارش"],
+        r["نام مشتری"],
+        r["موبایل مشتری"],
+        r["شهر"],
+        r["آدرس"]
+      ]
+      .join(" ")
+      .toLowerCase();
+
+
+      if(!hay.includes(term))
+        return false;
+
     }
+
+
     return true;
+
   });
-  const bounds=new maplibregl.LngLatBounds();
+
+
+  const bounds =
+    new maplibregl.LngLatBounds();
+
+
   filtered.forEach(r=>{
-    const lat=parseFloat(r["عرض جغرافیایی"]), lng=parseFloat(r["طول جغرافیایی"]);
-    if(!Number.isFinite(lat)||!Number.isFinite(lng)) return;
-    const el=document.createElement("div"); el.className="pin "+statusClass(r["وضعیت ارسال"]);
-    const html=`<div dir="rtl" style="font-family:Tahoma;line-height:1.9;min-width:220px">
-      <b>${esc(r["نام مشتری"])}</b><br>
-      کد سفارش: ${esc(r["کد سفارش"])}<br>
-      موبایل: ${esc(r["موبایل مشتری"])}<br>
-      ${esc(r["شهر"])} - ${esc(r["آدرس"])}<br>
-      کالا: ${esc(r["اقلام سفارش"])}<br>
-      تسویه: ${esc(r["وضعیت تسویه"])}<br>
-      وضعیت: <b>${esc(r["وضعیت ارسال"])}</b>
-      ${r["راننده"]?`<br>راننده: ${esc(r["راننده"])}`:""}
-      ${r["تاریخ ارسال"]?`<br>تاریخ ارسال: ${esc(r["تاریخ ارسال"])}`:""}
-      ${r["توضیحات"]?`<br>توضیحات: ${esc(r["توضیحات"])}`:""}
-    </div>`;
-    const marker=new maplibregl.Marker({element:el}).setLngLat([lng,lat]).setPopup(new maplibregl.Popup({offset:25}).setHTML(html)).addTo(map);
-    markers.push(marker); bounds.extend([lng,lat]);
+
+
+    const lat =
+      parseFloat(
+        r["عرض جغرافیایی"]
+      );
+
+
+    const lng =
+      parseFloat(
+        r["طول جغرافیایی"]
+      );
+
+
+    if(
+      !Number.isFinite(lat)
+      ||
+      !Number.isFinite(lng)
+    )
+      return;
+
+
+    const el =
+      document.createElement("div");
+
+
+    el.className =
+      "pin "
+      +
+      statusClass(
+        r["وضعیت ارسال"]
+      );
+
+
+    const html = `
+
+    <div
+      dir="rtl"
+      style="
+      direction:rtl;
+      text-align:right;
+      font-family:Tahoma,Arial,sans-serif;
+      line-height:1.9;
+      min-width:220px
+      "
+    >
+
+      <b>
+        ${esc(r["نام مشتری"])}
+      </b>
+
+      <br>
+
+      کد سفارش:
+      ${esc(r["کد سفارش"])}
+
+      <br>
+
+      موبایل:
+      ${esc(r["موبایل مشتری"])}
+
+      <br>
+
+      ${esc(r["شهر"])}
+      -
+      ${esc(r["آدرس"])}
+
+      <br>
+
+      کالا:
+      ${esc(r["اقلام سفارش"])}
+
+      <br>
+
+      تسویه:
+      ${esc(r["وضعیت تسویه"])}
+
+      <br>
+
+      وضعیت:
+      <b>
+        ${esc(r["وضعیت ارسال"])}
+      </b>
+
+
+      ${
+        r["راننده"]
+        ?
+        `<br>
+        راننده:
+        ${esc(r["راننده"])}`
+        :
+        ""
+      }
+
+
+      ${
+        r["تاریخ ارسال"]
+        ?
+        `<br>
+        تاریخ ارسال:
+        ${esc(r["تاریخ ارسال"])}`
+        :
+        ""
+      }
+
+
+      ${
+        r["توضیحات"]
+        ?
+        `<br>
+        توضیحات:
+        ${esc(r["توضیحات"])}`
+        :
+        ""
+      }
+
+    </div>
+
+    `;
+
+
+    const marker =
+      new maplibregl.Marker({
+        element:el
+      })
+
+      .setLngLat(
+        [lng,lat]
+      )
+
+      .setPopup(
+
+        new maplibregl.Popup({
+          offset:25
+        })
+
+        .setHTML(html)
+
+      )
+
+      .addTo(map);
+
+
+    markers.push(marker);
+
+
+    bounds.extend(
+      [lng,lat]
+    );
+
   });
-  document.getElementById("status").textContent=`${filtered.length} سفارش باز روی نقشه | کل داده‌های شیت: ${rows.length}`;
-  if(filtered.length) map.fitBounds(bounds,{padding:80,maxZoom:12,duration:700});
+
+
+  document
+  .getElementById("status")
+  .textContent =
+  `${filtered.length} سفارش باز روی نقشه | کل داده‌های شیت: ${rows.length}`;
+
+
+  if(filtered.length){
+
+    map.fitBounds(
+      bounds,
+      {
+        padding:80,
+        maxZoom:12,
+        duration:700
+      }
+    );
+
+  }
+
 }
+
+
+/* =========================
+   Load Google Sheet
+========================= */
 
 async function loadData(){
-  const status=document.getElementById("status");
-  status.textContent="در حال دریافت اطلاعات Google Sheet…";
+
+
+  const status =
+    document.getElementById("status");
+
+
+  status.textContent =
+    "در حال دریافت اطلاعات Google Sheet…";
+
+
   try{
-    const url=CSV_URL+(CSV_URL.includes("?")?"&":"?")+"_="+Date.now();
-    const res=await fetch(url,{cache:"no-store"});
-    if(!res.ok) throw new Error("HTTP "+res.status);
-    const text=await res.text();
-    const arr=parseCSV(text);
-    if(arr.length<2) throw new Error("داده‌ای دریافت نشد");
-    const headers=arr[0].map(x=>x.trim());
-    rows=arr.slice(1).map(a=>Object.fromEntries(headers.map((h,i)=>[h,(a[i]??"").trim()])));
-    const cities=[...new Set(rows.map(r=>r["شهر"]).filter(Boolean))].sort();
-    const sel=document.getElementById("city"); const old=sel.value;
-    sel.innerHTML='<option value="">همه شهرها</option>'+cities.map(c=>`<option>${esc(c)}</option>`).join("");
+
+
+    const url =
+      CSV_URL
+      +
+      (CSV_URL.includes("?")?"&":"?")
+      +
+      "_="
+      +
+      Date.now();
+
+
+    const res =
+      await fetch(
+        url,
+        {
+          cache:"no-store"
+        }
+      );
+
+
+    if(!res.ok)
+      throw new Error(
+        "HTTP "+res.status
+      );
+
+
+    const text =
+      await res.text();
+
+
+    const arr =
+      parseCSV(text);
+
+
+    if(arr.length<2)
+      throw new Error(
+        "داده‌ای دریافت نشد"
+      );
+
+
+    const headers =
+      arr[0]
+      .map(
+        x=>x.trim()
+      );
+
+
+    rows =
+      arr
+      .slice(1)
+      .map(
+        a=>
+        Object.fromEntries(
+          headers.map(
+            (h,i)=>
+            [
+              h,
+              (a[i]??"").trim()
+            ]
+          )
+        )
+      );
+
+
+    const cities =
+      [
+        ...new Set(
+          rows
+          .map(
+            r=>r["شهر"]
+          )
+          .filter(Boolean)
+        )
+      ]
+      .sort();
+
+
+    const sel =
+      document.getElementById("city");
+
+
+    const old =
+      sel.value;
+
+
+    sel.innerHTML =
+      '<option value="">همه شهرها</option>'
+      +
+      cities
+      .map(
+        c=>
+        `<option>${esc(c)}</option>`
+      )
+      .join("");
+
+
     sel.value=old;
+
+
     render();
-  }catch(e){
-    console.error(e);
-    status.innerHTML="اتصال مستقیم مرورگر به CSV ناموفق بود.<br>اگر این پیام را دیدی، اسکرین‌شات بفرست تا روش بعدی را فعال کنیم.";
+
+
   }
+
+  catch(e){
+
+
+    console.error(e);
+
+
+    status.innerHTML =
+    "اتصال مستقیم مرورگر به CSV ناموفق بود.<br>اگر این پیام را دیدی، اسکرین‌شات بفرست تا روش بعدی را فعال کنیم.";
+
+
+  }
+
 }
 
-document.getElementById("reload").onclick=loadData;
-document.getElementById("city").onchange=render;
-document.getElementById("statusFilter").onchange=render;
-document.getElementById("search").oninput=render;
-map.on("load",loadData);
+
+/* =========================
+   Events
+========================= */
+
+document
+.getElementById("reload")
+.onclick =
+loadData;
+
+
+document
+.getElementById("city")
+.onchange =
+render;
+
+
+document
+.getElementById("statusFilter")
+.onchange =
+render;
+
+
+document
+.getElementById("search")
+.oninput =
+render;
+
+
+map.on(
+  "load",
+  loadData
+);
+
+
 </script>
-</body></html>
+
+</body>
+</html>
