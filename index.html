@@ -256,6 +256,10 @@ button:disabled{opacity:.45;cursor:not-allowed}
   overflow:auto
 }
 
+/* =========================
+   رنگ پین سفارش‌ها
+========================= */
+
 .pin{
   width:23px;
   height:23px;
@@ -266,10 +270,30 @@ button:disabled{opacity:.45;cursor:not-allowed}
   cursor:pointer
 }
 
-.pin.ready{background:#00656D}
-.pin.wait{background:#D09039}
-.pin.planned{background:#3d6fb6}
-.pin.delivered{background:#8b8b8b}
+/* در انتظار تخصیص راننده */
+.pin.wait{
+  background:#D09039
+}
+
+/* تخصیص راننده شده */
+.pin.planned{
+  background:#3d6fb6
+}
+
+/* در حال ارسال */
+.pin.sending{
+  background:#6b4fa1
+}
+
+/* تحویل شده */
+.pin.delivered{
+  background:#2E8B57
+}
+
+/* وضعیت ناشناخته */
+.pin.unknown{
+  background:#8b8b8b
+}
 
 .pin.selected{
   width:31px;
@@ -347,6 +371,10 @@ button:disabled{opacity:.45;cursor:not-allowed}
   color:#fff
 }
 
+/* =========================
+   راهنمای رنگ‌ها
+========================= */
+
 .legend{
   display:flex;
   gap:8px;
@@ -366,10 +394,21 @@ button:disabled{opacity:.45;cursor:not-allowed}
   vertical-align:middle
 }
 
-.legend .a:before{background:#00656D}
-.legend .b:before{background:#D09039}
-.legend .c:before{background:#3d6fb6}
-.legend .d:before{background:#171C1F}
+.legend .wait:before{
+  background:#D09039
+}
+
+.legend .planned:before{
+  background:#3d6fb6
+}
+
+.legend .sending:before{
+  background:#6b4fa1
+}
+
+.legend .factory:before{
+  background:#171C1F
+}
 
 .small{
   font-size:10px;
@@ -424,7 +463,9 @@ button:disabled{opacity:.45;cursor:not-allowed}
 
 <div class="panel">
 
-  <div class="title">نقشه لجستیک نفیس</div>
+  <div class="title">
+    نقشه لجستیک نفیس
+  </div>
 
   <div class="subtitle">
     مدیریت سفارش‌ها و برنامه‌ریزی هوشمند مسیر رانندگان
@@ -443,9 +484,15 @@ button:disabled{opacity:.45;cursor:not-allowed}
 
     <select id="statusFilter">
       <option value="">همه وضعیت‌های باز</option>
-      <option>آماده برنامه‌ریزی</option>
-      <option>در انتظار تولید</option>
-      <option>ارسال برنامه‌ریزی شده</option>
+      <option value="در انتظار تخصیص راننده">
+        در انتظار تخصیص راننده
+      </option>
+      <option value="تخصیص راننده شده">
+        تخصیص راننده شده
+      </option>
+      <option value="در حال ارسال">
+        در حال ارسال
+      </option>
     </select>
 
   </div>
@@ -482,10 +529,10 @@ button:disabled{opacity:.45;cursor:not-allowed}
   </div>
 
   <div class="legend">
-    <span class="a">آماده برنامه‌ریزی</span>
-    <span class="b">در انتظار تولید</span>
-    <span class="c">برنامه‌ریزی شده</span>
-    <span class="d">کارخانه</span>
+    <span class="wait">در انتظار تخصیص راننده</span>
+    <span class="planned">تخصیص راننده شده</span>
+    <span class="sending">در حال ارسال</span>
+    <span class="factory">کارخانه</span>
   </div>
 
 
@@ -575,17 +622,6 @@ const OPTIMIZE_API =
 "https://nafis-route-api.nafis-mattress-iran.workers.dev/optimize";
 
 
-/*
-  مختصات کارخانه
-
-  مقدار دریافتی:
-  Latitude  = 34.79093637460241
-  Longitude = 50.82820551899968
-
-  در نقشه و API ترتیب:
-  [Longitude, Latitude]
-*/
-
 const FACTORY = {
   name:"کارخانه تشک نفیس",
   lat:34.79093637460241,
@@ -594,8 +630,8 @@ const FACTORY = {
 
 
 /*
-  کلید Map.ir فقط برای نمایش نقشه است.
-  موتور بهینه‌سازی از Worker استفاده می‌کند.
+  اینجا همان کلید Map.ir موجود
+  در فایل فعلی خودت را قرار بده.
 */
 
 const MAPIR_KEY =
@@ -941,27 +977,41 @@ function phoneLink(s){
 }
 
 
+/* =========================================
+   وضعیت سفارش
+========================================= */
+
 function statusClass(s){
 
-  if(
-    s === "آماده برنامه‌ریزی"
-  ){
-    return "ready";
-  }
+  s =
+    String(s || "")
+    .trim();
 
   if(
-    s === "در انتظار تولید"
+    s === "در انتظار تخصیص راننده"
   ){
     return "wait";
   }
 
   if(
-    s === "ارسال برنامه‌ریزی شده"
+    s === "تخصیص راننده شده"
   ){
     return "planned";
   }
 
-  return "delivered";
+  if(
+    s === "در حال ارسال"
+  ){
+    return "sending";
+  }
+
+  if(
+    s === "تحویل شده"
+  ){
+    return "delivered";
+  }
+
+  return "unknown";
 
 }
 
@@ -1521,9 +1571,19 @@ function renderOrders(){
   const filtered =
     orders.filter(r=>{
 
+      const orderStatus =
+        String(
+          r["وضعیت ارسال"] || ""
+        ).trim();
+
+
+      /*
+        سفارش تحویل‌شده
+        در نقشه سفارش‌های باز نمایش داده نمی‌شود.
+      */
+
       if(
-        (r["وضعیت ارسال"] || "")
-        .trim() === "تحویل شده"
+        orderStatus === "تحویل شده"
       ){
         return false;
       }
@@ -1539,7 +1599,7 @@ function renderOrders(){
 
       if(
         st &&
-        r["وضعیت ارسال"] !== st
+        orderStatus !== st
       ){
         return false;
       }
@@ -2097,9 +2157,8 @@ function buildOptimizationPayload(){
 
 
   /*
-    هر سفارش یک Job است.
-    مقدار delivery=[1] یعنی
-    هر سفارش یک واحد از ظرفیت خودرو مصرف می‌کند.
+    هر سفارش یک واحد
+    از ظرفیت راننده مصرف می‌کند.
   */
 
   const jobs =
@@ -2114,7 +2173,7 @@ function buildOptimizationPayload(){
           getLat(r)
         ],
 
-        delivery:[1],
+        amount:[1],
 
         service:300
 
@@ -2123,11 +2182,12 @@ function buildOptimizationPayload(){
 
 
   /*
-    همه خودروها از کارخانه شروع می‌کنند.
+    تمام رانندگان از کارخانه
+    شروع می‌کنند.
 
-    فعلاً end تعیین نمی‌کنیم؛
-    یعنی راننده مجبور نیست بعد از آخرین تحویل
-    به کارخانه برگردد.
+    end تعریف نشده است؛
+    بنابراین راننده مجبور نیست
+    بعد از آخرین تحویل به کارخانه برگردد.
   */
 
   const vehicles =
@@ -2142,6 +2202,8 @@ function buildOptimizationPayload(){
         return{
 
           id:index + 1,
+
+          profile:"driving-car",
 
           start:[
             FACTORY.lng,
@@ -2420,7 +2482,6 @@ async function optimizeRoute(){
 
 /* =========================================
    POLYLINE DECODER
-   ORS/VROOM geometry
 ========================================= */
 
 function decodePolyline(
@@ -2536,10 +2597,6 @@ function geometryCoordinates(route){
   }
 
 
-  /*
-    اگر Worker بعداً GeoJSON برگرداند
-  */
-
   if(
     typeof route.geometry === "object" &&
     Array.isArray(
@@ -2551,11 +2608,6 @@ function geometryCoordinates(route){
 
   }
 
-
-  /*
-    پاسخ فعلی VROOM
-    encoded polyline
-  */
 
   if(
     typeof route.geometry === "string"
@@ -2711,11 +2763,6 @@ function routeDriver(
       route.vehicle
     );
 
-
-  /*
-    vehicle IDs در Payload
-    از 1 شروع می‌شوند.
-  */
 
   return(
     selectedDrivers[
